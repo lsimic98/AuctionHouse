@@ -1,0 +1,54 @@
+@using Microsoft.AspNetCore.Identity;
+@using AuctionHouse.Models.Database;
+@using System.Security.Claims;
+
+
+@inject SignInManager<User> signInManager;
+
+@{
+    string fullName = "";
+    string role = "";
+    foreach (Claim claim in User.Claims)
+    {
+        if(claim.Type.Equals("fullName"))
+        {
+            fullName = claim.Value;
+            
+        }
+        else if(claim.Type.Equals(ClaimTypes.Role))
+        {
+             role = claim.Value;
+         
+        }
+
+        if(role!="" && fullName!="")
+            break;
+    
+    }
+}
+
+
+
+<ul class = "navbar-nav">
+
+    @if(signInManager.IsSignedIn(User)){
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Welcome[@role] @fullName</a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-controller="User" asp-action="LogOut">
+                <input type="submit" class="nav-link btn btn-link text-info " value="Log out"/>
+            </form>
+        </li>
+      
+    }
+    else{
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="User" asp-action="LogIn">Log in</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="User" asp-action="Register">Register</a>
+        </li>
+    }
+
+</ul>

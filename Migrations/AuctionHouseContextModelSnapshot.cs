@@ -219,20 +219,24 @@ namespace AuctionHouse.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
                     b.Property<string>("lastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("sex")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
                     b.Property<string>("state")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Active");
 
                     b.Property<int>("tokens")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -276,15 +280,15 @@ namespace AuctionHouse.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ae846572-350a-4470-af8c-d913b32b7a3d",
-                            ConcurrencyStamp = "f6326f52-b26b-44d9-b6ef-1a6b543825df",
+                            Id = "3268f411-7684-4e7d-b321-7da7dc4891ad",
+                            ConcurrencyStamp = "dc09aafe-606e-40ba-8239-241bff54de4f",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "7685171e-58ec-4544-98e0-a5fc4beb27d3",
-                            ConcurrencyStamp = "fa895699-55a1-4aac-9e50-2034b22bcc65",
+                            Id = "37b110d9-a4d4-47e0-be1e-6faba38fb963",
+                            ConcurrencyStamp = "c946abb9-b811-4849-bfb0-c98f8f82ee51",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using AuctionHouse.Models.View;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+//using AutoMapper;
 
 namespace AuctionHouse.Models.Database{
     public class User: IdentityUser{
@@ -12,7 +15,7 @@ namespace AuctionHouse.Models.Database{
         public string lastName{get; set;}
 
         [Required]
-        public char sex{get; set;}
+        public char gender{get; set;}
 
         [Required]
         public string state{get; set;}
@@ -29,5 +32,25 @@ namespace AuctionHouse.Models.Database{
       
         
     }
+
+    public class UserProfile : Profile  //Mapper klaasa :D
+    {
+        public UserProfile()
+        {
+
+            base.CreateMap<RegisterModel, User>( )
+            .ForMember(
+                destination => destination.Email,
+                options => options.MapFrom(data=>data.email)
+            ) 
+            .ForMember(
+                destination => destination.UserName,
+                options => options.MapFrom(data=>data.username)
+            )
+            .ReverseMap();
+        
+        }
+    }
+    
 
 }

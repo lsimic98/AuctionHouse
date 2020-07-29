@@ -20541,8 +20541,18 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\User\\Register.cshtml",
+      "TargetPath": "Views\\User\\Register.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\_ViewImports.cshtml",
       "TargetPath": "Views\\_ViewImports.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Shared\\User.cshtml",
+      "TargetPath": "Views\\Shared\\User.cshtml",
       "FileKind": "mvc"
     },
     {

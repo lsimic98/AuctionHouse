@@ -18,6 +18,14 @@ namespace AuctionHouse.Models.Database{
             base.OnModelCreating(builder);
 
                 builder.Entity<User>()
+                .Property(u => u.tokens)
+                .HasDefaultValue(0.00);
+
+                builder.Entity<User>()
+                .Property(u => u.state)
+                .HasDefaultValue("Active");
+
+                builder.Entity<User>()
                 .HasMany(u => u.AuctionWinners)
                 .WithOne(a => a.winner);
 

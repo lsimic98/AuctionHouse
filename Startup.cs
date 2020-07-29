@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuctionHouse.Models.Database;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,16 +33,17 @@ namespace AuctionHouse
 
             services.AddIdentity<User, IdentityRole>(
                 options => {
-                    //options.User.RequireUniqueEmail = true;
-                    //options.Password.RequireDigit = false;
-                    //options.Password.RequireNonAlphanumeric = false;
-                    //options.Password.RequireUppercase = false;
-                    //options.Password.RequiredLength = 2;
+                    options.User.RequireUniqueEmail = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequiredLength = 8;
                 }
 
 
             ).AddEntityFrameworkStores<AuctionHouseContext>();
 
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllersWithViews();
         }
