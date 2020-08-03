@@ -33,21 +33,33 @@
 
     @if(signInManager.IsSignedIn(User)){
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Welcome[@role] @fullName</a>
+            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                <i class="fa fa-user-circle-o"  aria-hidden="true"></i> @fullName
+            </a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-controller="User" asp-action="LogOut">
-                <input type="submit" class="nav-link btn btn-link text-info " value="Log out"/>
+                <button type="submit" class="btn btn-link text-danger">
+                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    Log out
+                </button>
             </form>
         </li>
       
     }
     else{
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="User" asp-action="LogIn">Log in</a>
+            <a class="nav-link" asp-controller="User" asp-action="LogIn">
+                <i class="fa fa-sign-in" aria-hidden="true"></i>
+                Log in
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="User" asp-action="Register">Register</a>
+            <a class="nav-link" asp-controller="User" asp-action="Register">
+                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                Register
+            </a>
+            
         </li>
     }
 

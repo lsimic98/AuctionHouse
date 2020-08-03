@@ -64,6 +64,42 @@ namespace AuctionHouse.Controllers{
 
             
         }
+        
+        public IActionResult LogIn(string returnUrl)
+        {
+            LogInModel model = new LogInModel()
+            {
+                returnUrl = returnUrl
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogIn(LogInModel model)
+        {
+            if(!ModelState.IsValid)
+                return View(model);
+
+            var result = await this.signInManager.PasswordSignInAsync(model.username, model.password, false, false);
+            
+            
+
+            if(!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Username or password not valid!");
+                return View(model);
+            }
+
+            if(model.returnUrl != null)
+                return Redirect(model.returnUrl);
+            else
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+
+        
 
        
       
@@ -116,6 +152,18 @@ namespace AuctionHouse.Controllers{
             return RedirectToAction(nameof(HomeController.Index), "Home");
       
         }
+
+
+
+         public IActionResult Tokens()
+         {
+             return View();
+         }
+
+
+
+
+
 
         
 

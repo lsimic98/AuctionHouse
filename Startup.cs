@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AuctionHouse.Factories;
 using AuctionHouse.Models.Database;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +46,15 @@ namespace AuctionHouse
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddAutoMapper(typeof(Startup));
 
+            services.ConfigureApplicationCookie(
+                options => {
+                    options.LoginPath = "/User/LogIn";
+                    options.AccessDeniedPath = "/Home/Error";
+                    
+                }
+            );
+            services.AddScoped<IUserClaimsPrincipalFactory<User>, ClaimFactory>();
+
             services.AddControllersWithViews();
         }
 
@@ -66,6 +76,7 @@ namespace AuctionHouse
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

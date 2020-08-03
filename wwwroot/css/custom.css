@@ -1,0 +1,16 @@
+#tokens
+{
+  background-color: #808080;
+  border: 3px solid black; 
+  color: #333333;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 32px;
+  font-weight: bold;
+  width: 225px;
+  border-radius: 12px;
+  
+  
+}
