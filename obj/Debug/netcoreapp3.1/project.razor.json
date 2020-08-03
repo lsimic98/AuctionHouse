@@ -20521,6 +20521,11 @@
   "RootNamespace": "AuctionHouse",
   "Documents": [
     {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Payment\\Tokens.cshtml",
+      "TargetPath": "Views\\Payment\\Tokens.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Shared\\Error.cshtml",
       "TargetPath": "Views\\Shared\\Error.cshtml",
       "FileKind": "mvc"
@@ -20568,11 +20573,6 @@
     {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\User\\LogIn.cshtml",
       "TargetPath": "Views\\User\\LogIn.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\User\\Tokens.cshtml",
-      "TargetPath": "Views\\User\\Tokens.cshtml",
       "FileKind": "mvc"
     }
   ],

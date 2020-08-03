@@ -1,5 +1,4 @@
-#tokens
-{
+#tokens{
   background-color: #808080;
   border: 3px solid black; 
   color: #333333;
@@ -11,6 +10,43 @@
   font-weight: bold;
   width: 225px;
   border-radius: 12px;
-  
-  
+}
+#platinum{
+  background-color: #6abac3;
+  border: 3px solid black; 
+  color: #333333;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 22px;
+  font-weight: bold;
+  width: 225px;
+  border-radius: 12px;
+}
+#gold{
+  background-color: #ffbf00;
+  border: 3px solid black; 
+  color: #333333;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 22px;
+  font-weight: bold;
+  width: 225px;
+  border-radius: 12px;
+}
+#silver{
+  background-color: #b5b7bb;
+  border: 3px solid black; 
+  color: #333333;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 22px;
+  font-weight: bold;
+  width: 225px;
+  border-radius: 12px;
 }

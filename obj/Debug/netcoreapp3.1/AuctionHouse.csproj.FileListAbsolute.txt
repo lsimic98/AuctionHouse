@@ -377,4 +377,4 @@ C:\Users\Kalu\Desktop\IEP\AuctionHouse\bin\Debug\netcoreapp3.1\AutoMapper.Extens
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Shared\User.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\Register.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\LogIn.cshtml.g.cs
-C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\Tokens.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Payment\Tokens.cshtml.g.cs

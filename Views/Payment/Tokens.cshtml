@@ -1,0 +1,68 @@
+@model int 
+
+@{
+    ViewData["Title"] = "Tokens";
+}
+
+
+
+
+<div class="container">
+<div class="row justify-content-center">
+        <div class="col-xl-4">
+            <button id="tokens" disabled> 
+                <img src="~/images/token.png" width="75"/>
+                @Model
+            </button>
+        </div>
+       
+    
+</div>
+
+<h1>Token bags</h1>
+<div class="row  mt-2">
+    <div class="col-xl-4 mt-1">
+    <button id="platinum" disabled>
+        <p>
+            <label>
+                <span>Platinum</span>
+                <input id="Platinum" name="bag" type="radio" value="19.5" checked />
+                <span><br>20 Tokens - 19.5$</span>
+            </label>
+        </p>
+    </button>
+    </div>
+    <div class="col-xl-4 mt-1">
+        <button id="gold" disabled>
+            <p>
+               <label>
+                   <span>Gold</span>
+                   <input id="Gold" name="bag" type="radio" value="12.5"/>
+                   <span><br>10 Tokens - 12.5$</span>
+                </label>
+            </p>
+        </button>        
+    </div>
+    <div class="col-xl-4 mt-1">
+        <button id="silver" disabled>
+            <p>
+                <label>
+                    <span>Silver</span>
+                    <input id="Silver" name="bag" type="radio" value="7.5"/>
+                    <span><br>5 Tokens - 7.5$</span>
+                </label>
+            </p>
+        </button>
+    </div>
+    
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-xl-4">
+        <script src="https://www.paypal.com/sdk/js?client-id=AWSsmFC2BrHWNvY3bypHyK44DTqD9ZiSrjCrqka-c_ER0qtJP-im8sZm9K7aOqxvmqGUIPQ_tSui3rIS"></script>
+        <div id="paypal" style="width:225px"></div>
+    </div>
+
+</div>
+
+</div>

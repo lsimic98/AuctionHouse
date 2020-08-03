@@ -155,10 +155,7 @@ namespace AuctionHouse.Controllers{
 
 
 
-         public IActionResult Tokens()
-         {
-             return View();
-         }
+        
 
 
 
