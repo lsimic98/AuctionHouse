@@ -33,7 +33,7 @@
 
     @if(signInManager.IsSignedIn(User)){
         <li class="nav-item">
-            <a class="nav-link" asp-controller="Home" asp-action="Index">
+            <a class="nav-link" asp-controller="User" asp-action="UserInfo">
                 <i class="fa fa-user-circle-o"  aria-hidden="true"></i> @fullName
             </a>
         </li>

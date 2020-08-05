@@ -1,0 +1,64 @@
+@model AuctionHouse.Models.Database.User
+@{
+    ViewData["Title"] = "User profile";
+
+    string Gender;
+    if(@Model.gender=='M')
+        Gender = "Male";
+    else
+        Gender = "Female";  
+}
+<div class="row">
+    <table class="table table-responsive-xl">
+    <thead>
+        <tr>
+        <th scope="col" colspan="3" style="font-size: 25px;">Information</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td rowspan="7" width="200">
+                <img src="~/images/user.png" width="200"/>
+            </td>
+        </tr>
+
+        <tr>
+        <td>Username</td>
+        <td>@Model.UserName</td>
+        </tr>
+
+        <tr>
+        <td>First Name</td>
+        <td>@Model.firstName</td>
+        </tr>
+
+        <tr>
+        <td>Last Name</td>
+        <td>@Model.lastName</td>
+        </tr>
+
+        <tr>
+        <td>Gender</td>
+        <td>@Gender</td>
+        </tr>
+
+        <tr>
+        <td>Email</td>
+        <td>@Model.Email</td>
+        </tr>
+
+        <tr>
+        <td>Tokens</td>
+        <td>@Model.tokens</td>
+        </tr>
+
+    </tbody>
+    </table>
+</div>
+<div class="row">
+    <a asp-controller="User" asp-action="EditUserInfo">
+            <button class="btn btn-primary">Edit user info</button>
+    </a>
+</div>
+

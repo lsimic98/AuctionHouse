@@ -13,6 +13,7 @@ function buyTokens ( ) {
             "__RequestVerificationToken" : verificationToken // i za kraj taj token za verifikaciju
         },
         success: function ( response ) {
+            
             location.reload(); //Sta se desava kada je metoda uspesna, kada vrati JSON true objekat, ja sam mu reko da se stranice refreshuje, kako bi se osvezilo stanje, mozemo to da uradimo i na mnogo bolji nacin, provbacemo, brzo se radi
         },
         error: function ( response ) {

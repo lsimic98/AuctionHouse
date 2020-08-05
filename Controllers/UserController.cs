@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AuctionHouse.Models.Database;
 using AuctionHouse.Models.View;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace AuctionHouse.Controllers{
         private UserManager<User> userManager;
         private IMapper mapper;
         private SignInManager<User> signInManager;
+        
 
 
         public UserController(AuctionHouseContext context, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper)
@@ -60,7 +62,7 @@ namespace AuctionHouse.Controllers{
                 return View(model);
             }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(UserController.LogIn), "User");
 
             
         }
@@ -152,6 +154,153 @@ namespace AuctionHouse.Controllers{
             return RedirectToAction(nameof(HomeController.Index), "Home");
       
         }
+        
+        [Authorize]
+        public async Task<IActionResult> LogOutPasswordChange()
+        {
+            await this.signInManager.SignOutAsync();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+
+      
+
+
+
+        [Authorize]
+        public async Task<IActionResult> UserInfo()
+        {
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+            return View(loggedInUser);
+        }
+
+
+        [Authorize]
+        public async Task<IActionResult> EditUserInfo()
+        {
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+            EditUserModel model = new EditUserModel()
+            {
+                firstName = loggedInUser.firstName,
+                lastName = loggedInUser.lastName,
+                gender = loggedInUser.gender,
+                email = loggedInUser.Email,
+                newPassword = "",
+                oldPassword =""
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUserInfo(EditUserModel model)
+        {
+
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+
+            if(model.newPassword==null && model.oldPassword==null)
+            {
+                
+                loggedInUser.firstName = model.firstName;
+                loggedInUser.lastName = model.lastName;
+                loggedInUser.gender = model.gender;
+                
+                if(model.email!=loggedInUser.Email)
+                {
+                    bool exists = this.context.Users.Where(user=>user.Email == model.email).Any();
+                    if(exists)
+                    {
+                        ModelState.AddModelError("", "Email already exists");
+                        return View(model);
+                    }
+                    loggedInUser.Email = model.email;
+                    loggedInUser.NormalizedEmail = model.email.ToUpper();
+                    
+                }
+
+                await this.userManager.UpdateAsync(loggedInUser);
+                await this.signInManager.RefreshSignInAsync(loggedInUser);
+                return RedirectToAction(nameof(UserController.UserInfo), "User");
+            }
+            else     
+            {
+                PasswordVerificationResult result  = this.userManager.PasswordHasher.VerifyHashedPassword(loggedInUser, loggedInUser.PasswordHash, model.oldPassword);
+                if(result == PasswordVerificationResult.Failed)
+                {
+                    ModelState.AddModelError("", "Old password incorrect!");
+                    return View(model);
+                }
+                if(model.newPassword==null)
+                {
+                    ModelState.AddModelError("", "You must enter new password!");
+                    return View(model);
+                }
+
+                loggedInUser.firstName = model.firstName;
+                loggedInUser.lastName = model.lastName;
+                loggedInUser.gender = model.gender;
+                
+                if(model.email!=loggedInUser.Email)
+                {
+                    bool exists = this.context.Users.Where(user=>user.Email == model.email).Any();
+                    if(exists)
+                    {
+                        ModelState.AddModelError("", "Email already exists");
+                        return View(model);
+                    }
+                    loggedInUser.Email = model.email;
+                    loggedInUser.NormalizedEmail = model.email.ToUpper();
+                    
+                }
+
+                await this.userManager.RemovePasswordAsync(loggedInUser);
+                await this.userManager.AddPasswordAsync(loggedInUser, model.newPassword);
+                await this.userManager.UpdateAsync(loggedInUser);
+                return RedirectToAction(nameof(UserController.LogOutPasswordChange), "User");
+
+    
+            }
+            
+
+         
+       
+            
+
+          
+        }
+
+
+
+
+
+        public async Task<IActionResult> oldPassword(string password) 
+        {
+            bool exists = false;
+
+            if(password!="")
+            {
+                User loggedInUser = await this.userManager.GetUserAsync(base.User);
+                PasswordVerificationResult result  = this.userManager.PasswordHasher.VerifyHashedPassword(loggedInUser, loggedInUser.PasswordHash, password);
+                if(result != PasswordVerificationResult.Failed)
+                    exists = false;
+                else
+                    exists = true;
+            }
+
+
+            if(exists)
+                return Json("Incorrect old password!");
+            else
+                return Json(true);
+
+        }
+
 
 
 
