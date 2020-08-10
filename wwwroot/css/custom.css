@@ -57,5 +57,21 @@
   -moz-border-radius:10px;
   border-radius:10px;
   box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.3);
-}			                                                      
+}
+
+.Silver
+{
+  font-weight: bold;
+  color: #808080;
+}
+.Gold
+{
+  font-weight: bold;
+  color: #ffbf00;
+}
+.Platinum
+{
+  font-weight: bold;
+  color: #6abac3;
+}
                                   

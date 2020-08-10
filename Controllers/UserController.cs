@@ -1,11 +1,16 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuctionHouse.Models.Database;
 using AuctionHouse.Models.View;
+using AuctionHouse.QuartzJobs;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
+using X.PagedList;
 
 namespace AuctionHouse.Controllers{
 
@@ -15,15 +20,22 @@ namespace AuctionHouse.Controllers{
         private UserManager<User> userManager;
         private IMapper mapper;
         private SignInManager<User> signInManager;
+        private ISchedulerFactory schedulerFactory;
+        private IScheduler scheduler;
+        private bool schedulerStarted = false;
+
         
+    
 
-
-        public UserController(AuctionHouseContext context, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper)
+        public UserController(AuctionHouseContext context, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ISchedulerFactory schedulerFactory)
         {
             this.context = context;
             this.userManager = userManager;
             this.mapper = mapper;
             this.signInManager = signInManager;
+            this.schedulerFactory = schedulerFactory;
+          
+        
         }
 
         
@@ -66,6 +78,8 @@ namespace AuctionHouse.Controllers{
 
             
         }
+
+
         
         public IActionResult LogIn(string returnUrl)
         {
@@ -85,6 +99,9 @@ namespace AuctionHouse.Controllers{
                 return View(model);
 
             var result = await this.signInManager.PasswordSignInAsync(model.username, model.password, false, false);
+
+
+            
             
             
 
@@ -302,16 +319,101 @@ namespace AuctionHouse.Controllers{
         }
 
 
+      public async Task<IActionResult> TestTask()
+      {
+          if(!schedulerStarted)
+          {
+              schedulerStarted = true;
+              this.scheduler = await this.schedulerFactory.GetScheduler();
+              await this.scheduler.Start();
+          }
 
 
-        
+          JobDataMap map = new JobDataMap();
+          map.Add("username", "lsimic98");
+
+          IJobDetail job = JobBuilder.Create<TestJob>()
+          .SetJobData(map)
+          .Build ();
+	
+
+          ITrigger trigger = TriggerBuilder
+          .Create()
+          .StartAt(DateTimeOffset.Now.AddSeconds(10))
+          .Build();
+
+           await this.scheduler.ScheduleJob(job, trigger);
+           
+           return RedirectToAction(nameof(HomeController.Index), "Home");
+    
+      }
+
+      [Authorize(Roles="Administrator")]
+      public async Task<IActionResult> BanUsers(int? page)
+      {
+
+          IList<User> usersList = await this.userManager.GetUsersInRoleAsync("User");
+          UsersOverview users = new UsersOverview()
+          {
+              users = usersList.ToPagedList(page ?? 1,1)
+    
+          };
+          return View(users);
+
+      }
+
+      [Authorize(Roles="Administrator")]
+      [HttpPost]
+      [ValidateAntiForgeryToken]
+      public async Task<IActionResult> BanUser(string username)
+      {
+          User user = this.context.Users.FirstOrDefault(u => u.UserName==username);
+          
+          if(user==null)
+           return Json(false);
+
+          user.state="Deleted";
+
+          await this.userManager.UpdateAsync(user);
+
+          return PartialView ("UnbanUser", user);
+
+      }
+      
+      [Authorize(Roles="Administrator")]
+      [HttpPost]
+      [ValidateAntiForgeryToken]
+      public async Task<IActionResult> UnbanUser(string username)
+      {
+          User user = this.context.Users.FirstOrDefault(u => u.UserName==username);
+
+          if(user==null)
+           return Json(false);
+
+          user.state="Active";
+
+          await this.userManager.UpdateAsync(user);
+
+          return PartialView ("BanUser", user);
+
+      }
 
 
 
 
 
 
-        
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

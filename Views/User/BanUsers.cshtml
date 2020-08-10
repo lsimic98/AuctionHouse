@@ -1,0 +1,80 @@
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model AuctionHouse.Models.View.UsersOverview;
+@{
+    ViewData["Title"] = "Ban Users";
+    int num = 0;
+}
+
+<h1>Ban Users</h1>
+
+<div class="row">
+    <table class="table table-responsive-xl">
+    <thead>
+        <tr>
+         <th scope="col"style="font-size: 15px;">#</th>
+         <th scope="col"style="font-size: 15px;">Username</th>
+         <th scope="col"style="font-size: 15px;">First Name</th>
+         <th scope="col"style="font-size: 15px;">Last Name</th>
+         <th scope="col"style="font-size: 15px;">Email</th>
+         <th scope="col"style="font-size: 15px;">Tokens</th>
+         <th scope="col"style="font-size: 15px;">Status/Command</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in @Model.users)
+        {
+            
+            num++;
+            <tr>
+                <th scope="row">@num</th>
+                <td>@item.UserName</td>
+                <td>@item.firstName</td>
+                <td>@item.lastName</td>
+                <td>@item.Email</td>
+                <td>@item.tokens</td>
+                @if(item.state.Equals("Active"))
+                {
+                    <td id="@item.UserName">
+                        <div class="text-success" style="font-weight: bold;">@item.state <button class="btn btn-danger" onclick="banUser('@item.UserName')">Ban</button></div>
+                    </td>
+                }
+                else
+                {
+                    <td id="@item.UserName">
+                        <div class="text-danger" style="font-weight: bold;">@item.state <button class="btn btn-success" onclick="unbanUser('@item.UserName')">Unban</button></div>
+                        
+                    </td>                
+                }
+            </tr>
+        }
+
+    </tbody>
+    </table>
+</div>
+
+
+<div class="row justify-content-center">
+@Html.PagedListPager(Model.users, page => Url.Action("BanUsers", new { page = page }),
+    new X.PagedList.Web.Common.PagedListRenderOptionsBase
+    {
+        DisplayPageCountAndCurrentLocation = true,
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+
+    @section Scripts{
+    <script>
+        // Workaround to fix style of text for showing items .. through ..
+        // Problem related to Boostrap 4 according to issue in link below
+        // https://github.com/dncuug/X.PagedList/issues/127
+        $(document).ready(function () {
+            $('ul.pagination > li.disabled > a').addClass('page-link');
+        });
+    </script>
+}
+</div>
+
+
+

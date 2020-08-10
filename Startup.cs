@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuctionHouse.Factories;
 using AuctionHouse.Models.Database;
+using AuctionHouse.Models.Initializers;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Quartz;
 
 namespace AuctionHouse
 {
@@ -46,6 +48,30 @@ namespace AuctionHouse
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddQuartz(
+                q =>
+                {
+                    q.SchedulerId = "Scheduler-Core";
+                    //q.SchedulerName = "QuartzScheduler";
+                    q.UseMicrosoftDependencyInjectionJobFactory(options =>{
+                        // if we don't have the job in DI, allow fallback to configure via default constructor
+                        options.AllowDefaultConstructor = true;
+                    });
+                    q.UseSimpleTypeLoader();
+                    q.UseInMemoryStore();
+                    q.UseDefaultThreadPool(tp =>
+                    {
+                        tp.MaxConcurrency = 10;
+                    });
+
+                    
+                }
+            );
+
+
+           
+        
+
             services.ConfigureApplicationCookie(
                 options => {
                     options.LoginPath = "/User/LogIn";
@@ -59,10 +85,11 @@ namespace AuctionHouse
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager)
         {
             if (env.IsDevelopment())
             {
+                UserInitializer.initialize(userManager);
                 app.UseDeveloperExceptionPage();
             }
             else

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+
 
 namespace AuctionHouse.Controllers
 {
@@ -24,10 +26,21 @@ namespace AuctionHouse.Controllers
         }
 
 
-         public async Task<IActionResult> Tokens()
+         public async Task<IActionResult> Tokens(int? page)
          {
+             
              User loggedInUser = await this.userManager.GetUserAsync(base.User);
-             int tokens = loggedInUser.tokens;
+             double TotalMoneySpent = await this.context.TokenTransactions.Where(t => t.userId==loggedInUser.Id).Include(t => t.bag).SumAsync(b => b.bag.price);
+             IList<TokenTransaction> list = await this.context.TokenTransactions.Include(t => t.bag).Where(t => t.userId==loggedInUser.Id).OrderByDescending(t => t.purchaseDate).ToListAsync();
+
+             TokensOverview tokens = new TokensOverview()
+             {
+                 transactions = list.ToPagedList(page ?? 1,10),
+                 tokens = loggedInUser.tokens,
+                 moneyspent = TotalMoneySpent
+                 
+             };
+             //int tokens = loggedInUser.tokens;
              return View(tokens);
          }
 

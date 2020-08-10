@@ -1,0 +1,8 @@
+@model AuctionHouse.Models.Database.User;
+
+<div class="text-success" style="font-weight: bold;">
+    @Model.state 
+    <button class="btn btn-danger" onclick="banUser('@Model.UserName')">
+        Ban
+    </button>
+</div>

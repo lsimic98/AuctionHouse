@@ -1,7 +1,11 @@
-@model int 
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model AuctionHouse.Models.View.TokensOverview; 
 
 @{
     ViewData["Title"] = "Tokens";
+    int num = 0;
+    
 }
 
 
@@ -10,7 +14,7 @@
         <div class="col-xl-4">
             <button id="tokens" disabled> 
                 <img src="~/images/token.png" width="75"/>
-                <div id="token">@Model</div>
+                <div id="token">@Model.tokens</div>
             </button>
         </div>
        
@@ -19,6 +23,7 @@
 
 <h1>Token bags</h1>
 <div class="row  mt-2">
+    
     <div class="col-xl-4 mt-1">
     <button id="platinum" disabled>
         <p>
@@ -63,4 +68,70 @@
 
 </div>
 
+</div>
+
+<h1>Transactions</h1>
+<div class="row">
+    <table class="table table-responsive-xl">
+    <thead>
+        <tr>
+         <th scope="col"style="font-size: 15px;">#</th>
+         <th scope="col"style="font-size: 15px;">Date</th>
+         <th scope="col"style="font-size: 15px;">Bag name</th>
+         <th scope="col"style="font-size: 15px;">Amount</th>
+         <th scope="col"style="font-size: 15px;">Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in @Model.transactions)
+        {
+            
+            num++;
+            <tr>
+                <th scope="row">@num</th>
+
+                <td>@item.purchaseDate</td>
+
+                <td class="@item.bag.bagName">
+                    @item.bag.bagName
+                </td>
+
+                <td style="font-weight: bold;">@item.bag.amount</td>
+
+                <td style="font-weight: bold;">@item.bag.price$</td>
+            </tr>
+
+           
+        }
+    </tbody>
+    </table>
+
+</div>
+
+
+    <div class="row justify-content-center mt-2">
+        <div class="col-xl"><p style="font-weight:bold; font-size: 20px;">Total money spent: @Model.moneyspent$</p></div>
+
+    </div>
+
+<div class="row justify-content-center">
+@Html.PagedListPager(Model.transactions, page => Url.Action("Tokens", new { page = page }),
+    new X.PagedList.Web.Common.PagedListRenderOptionsBase
+    {
+        DisplayPageCountAndCurrentLocation = true,
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+
+    @section Scripts{
+    <script>
+        // Workaround to fix style of text for showing items .. through ..
+        // Problem related to Boostrap 4 according to issue in link below
+        // https://github.com/dncuug/X.PagedList/issues/127
+        $(document).ready(function () {
+            $('ul.pagination > li.disabled > a').addClass('page-link');
+        });
+    </script>
+}
 </div>

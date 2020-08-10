@@ -32,11 +32,28 @@
 <ul class = "navbar-nav">
 
     @if(signInManager.IsSignedIn(User)){
+
+        
+       
         <li class="nav-item">
             <a class="nav-link" asp-controller="User" asp-action="UserInfo">
                 <i class="fa fa-user-circle-o"  aria-hidden="true"></i> @fullName
             </a>
         </li>
+
+         @if(@role.Equals("Administrator")){
+            <li class="nav-item dropdown">
+                <button type="button" class="btn btn-link text-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-wrench" aria-hidden="true"></i>Admin options
+                </button>
+                <div class="dropdown-menu bg-dark">
+                    <a class="dropdown-item text-info" asp-controller="User" asp-action="LogOut">Auctions Validation</a>
+                    <a class="dropdown-item text-info" asp-controller="User" asp-action="BanUsers">Ban/Unban User</a>
+                </div>
+            </li>
+
+        }
+     
         <li class="nav-item">
             <form class="form-inline" asp-controller="User" asp-action="LogOut">
                 <button type="submit" class="btn btn-link text-danger">
