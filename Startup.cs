@@ -110,7 +110,7 @@ namespace AuctionHouse
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Auction}/{action=Index}/{id?}");
             });
         }
     }

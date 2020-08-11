@@ -98,23 +98,28 @@ namespace AuctionHouse.Controllers{
             if(!ModelState.IsValid)
                 return View(model);
 
-            var result = await this.signInManager.PasswordSignInAsync(model.username, model.password, false, false);
+            User user = this.context.Users.Where(u => u.UserName == model.username).FirstOrDefault();
+            bool canSignIn = await this.signInManager.CanSignInAsync(user);
 
-
-            
-            
-            
-
-            if(!result.Succeeded)
+            if(canSignIn && user.state.Equals("Active"))
+            {
+                await this.signInManager.PasswordSignInAsync(model.username, model.password, false, false);
+                if(model.returnUrl != null)
+                    return Redirect(model.returnUrl);
+                else
+                    return RedirectToAction(nameof(AuctionController.Index), "Auction");               
+            }
+            else if(!canSignIn)
             {
                 ModelState.AddModelError("", "Username or password not valid!");
                 return View(model);
             }
-
-            if(model.returnUrl != null)
-                return Redirect(model.returnUrl);
             else
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+            {
+                ModelState.AddModelError("", "Your Account Has Been Temporarily Suspended!");
+                return View(model);                
+            }
+
         }
 
 

@@ -402,3 +402,4 @@ C:\Users\Kalu\Desktop\IEP\AuctionHouse\bin\Debug\netcoreapp3.1\X.PagedList.Web.C
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\BanUsers.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\BanUser.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\UnbanUser.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\Index.cshtml.g.cs
