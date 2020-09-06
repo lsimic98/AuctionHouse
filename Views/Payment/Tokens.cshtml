@@ -1,12 +1,18 @@
 @using X.PagedList.Mvc.Core;
 @using X.PagedList;
-@model AuctionHouse.Models.View.TokensOverview; 
+@model AuctionHouse.Models.View.TokensOverview;
+
+  
+
 
 @{
     ViewData["Title"] = "Tokens";
     int num = 0;
-    
 }
+
+
+
+
 
 
 <div class="container">
@@ -125,6 +131,7 @@
     })
 
     @section Scripts{
+    <script src="@Url.Content("~/Scripts/tokens.js")"></script>
     <script>
         // Workaround to fix style of text for showing items .. through ..
         // Problem related to Boostrap 4 according to issue in link below

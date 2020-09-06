@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionHouse.Models.View
 {
-    public class CreateAuctionModel{
+    public class EditAuctionModel{
         [Required]
         [MinLength(10)]
         [MaxLength(40)]
@@ -39,9 +39,11 @@ namespace AuctionHouse.Models.View
         [Display(Name = "Close time")]
         public string closeTime{get; set;}
 
-        [Required]
         [Display (Name = "Image")]
         public IFormFile file { get; set; }
+
+        [Required]
+        public int id {get; set;}
 
         
     }

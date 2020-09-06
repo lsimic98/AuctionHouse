@@ -1,0 +1,108 @@
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model AuctionHouse.Models.View.AuctionsOverview; 
+
+@{
+    ViewData["Title"] = "My auctions";
+    int num = 0;
+    
+}
+
+
+<h1>My auctions</h1>
+<div class="row">
+    <table class="table table-responsive-xl">
+    <thead>
+        <tr>
+         <th scope="col"style="font-size: 15px;">#</th>
+         <th scope="col"style="font-size: 15px;">Name</th>
+         <th scope="col"style="font-size: 15px;">Create date</th>
+         <th scope="col"style="font-size: 15px;">Open date</th>
+         <th scope="col"style="font-size: 15px;">Close date</th>
+         <th scope="col"style="font-size: 15px;">Start price</th>
+         <th scope="col"style="font-size: 15px;">Current price</th>
+         <th scope="col"style="font-size: 15px;">State</th>
+         <th scope="col"style="font-size: 15px;">Operations</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in @Model.auctions)
+        {
+            
+            num++;
+            <tr>
+                <th scope="row">@num</th>
+
+                <td>@item.name</td>
+
+                 <td>@item.createDate.ToString()</td>
+
+                 <td>@item.openDate.ToString()</td>
+
+                 <td>@item.closeDate.ToString()</td>
+
+                 <td>@item.startPrice</td>
+
+                 <td>@item.currentPrice</td>
+
+                <td style="font-weight: bold; font-size:20px;">@item.state</td>
+
+                <td>
+                    @if(@item.state.Equals("Draft"))
+                    {
+                        <a asp-action="EditAuction" asp-route-id="@item.Id">
+                            <button  style="width:89px;"class="btn btn-success">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+                            </button>
+                        </a>
+                        
+                        <button onClick="deleteAuctionConfirm('@item.Id')" style="width:89px;" class="btn btn-danger">
+                            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                        </button>
+                    }
+                    else
+                    {
+                        <button style="width:89px;"class="btn btn-success" disabled>
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+                        </button>
+                        <button style="width:89px;" class="btn btn-danger" disabled>
+                            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                        </button>
+                    }
+                    
+                    <button style="width:89px;" class="btn btn-info"><i class="fa fa-info" aria-hidden="true"></i> Details</button>
+                    
+              
+                </td>
+
+            </tr>
+
+           
+        }
+    </tbody>
+    </table>
+
+</div>
+
+<div class="row justify-content-center">
+@Html.PagedListPager(Model.auctions, page => Url.Action("Auctions", new { page = page }),
+    new X.PagedList.Web.Common.PagedListRenderOptionsBase
+    {
+        DisplayPageCountAndCurrentLocation = true,
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+
+    @section Scripts{
+    <script src="@Url.Content("~/Scripts/auctions.js")"></script>
+    <script>
+        // Workaround to fix style of text for showing items .. through ..
+        // Problem related to Boostrap 4 according to issue in link below
+        // https://github.com/dncuug/X.PagedList/issues/127
+        $(document).ready(function () {
+            $('ul.pagination > li.disabled > a').addClass('page-link');
+        });
+    </script>
+}
+</div>

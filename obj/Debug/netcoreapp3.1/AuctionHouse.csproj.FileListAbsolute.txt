@@ -403,3 +403,7 @@ C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\BanUser.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\User\UnbanUser.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\Index.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\CreateAuction.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\Auctions.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\EditAuction.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\AuctionErrors.cshtml.g.cs

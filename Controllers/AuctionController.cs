@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AuctionHouse.Models.Database;
@@ -9,6 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Quartz;
 using X.PagedList;
 
@@ -43,10 +45,286 @@ namespace AuctionHouse.Controllers{
             return View();
         }
 
+        [Authorize]
         public IActionResult CreateAuction()
         {
+            DateTime date = DateTime.Now;
+
+            string hours = date.Hour > 9 ? date.Hour.ToString() : date.Hour.ToString().PadLeft(2,'0');
+            string minutes = date.Minute>9 ? date.Minute.ToString() : date.Minute.ToString().PadLeft(2,'0');
+            string seconds = date.Second>9 ? date.Second.ToString() : date.Second.ToString().PadLeft(2,'0');
+            string time = hours + ":" + minutes + ":" + seconds;
+
+            CreateAuctionModel model = new CreateAuctionModel()
+            {
+                openDate = date,
+                openTime = time,
+                closeDate = date.AddDays(1),
+                closeTime = time,
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAuction(CreateAuctionModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            string[] arr1 = model.openTime.Split(':',3);
+            string[] arr2 = model.closeTime.Split(':',3);
+
+            TimeSpan ts1 = new TimeSpan(Convert.ToInt32(arr1[0]),  Convert.ToInt32(arr1[1]), Convert.ToInt32(arr1[2]));
+            TimeSpan ts2 = new TimeSpan(Convert.ToInt32(arr2[0]),  Convert.ToInt32(arr2[1]), Convert.ToInt32(arr2[2]));
+
+            model.openDate = model.openDate.Date + ts1;
+            model.closeDate = model.closeDate.Date + ts2; 
+
+            if(DateTime.Compare(DateTime.Now, model.openDate)>0)
+            {
+                ModelState.AddModelError("", "Invalid open date! (minimal time is +5minuts form now)");
+                return View(model);
+            }
+            else if(DateTime.Compare(model.openDate, model.closeDate)>0)
+            {
+                ModelState.AddModelError("", "Close date must be greater than open date!");
+                return View(model);               
+
+            }
+
+            User user = await this.userManager.GetUserAsync(base.User);
+
+            using ( BinaryReader reader = new BinaryReader ( model.file.OpenReadStream ( ) ) ) {
+                Auction auction = new Auction ( ) {
+                    name = model.name,
+                    description = model.description,
+                    startPrice = model.startPrice,
+                    currentPrice = model.startPrice,
+                    createDate = DateTime.Now,
+                    openDate = model.openDate,
+                    closeDate = model.closeDate,
+                    state = "Draft",
+                    winner = null,
+                    owner = user,
+                    image = reader.ReadBytes ( Convert.ToInt32 ( reader.BaseStream.Length ) )
+
+                };
+
+                await this.context.Auctions.AddAsync ( auction );
+                await this.context.SaveChangesAsync ( );
+                await this.AuctionOpenTask(auction.Id, auction.openDate);
+            }
+
+
+
+            return RedirectToAction(nameof(AuctionController.Index), "Auction");   
+
+        }
+
+
+        public IActionResult AuctionErrors()
+        {   
             return View();
         }
+        
+
+        public async Task<IActionResult> Auctions(int? page)
+        {
+             User loggedInUser = await this.userManager.GetUserAsync(base.User);
+             IList<Auction> list = await this.context.Auctions.Where(a => a.owner.Id == loggedInUser.Id).OrderBy(a => a.createDate).ToListAsync();
+             AuctionsOverview auctions = new AuctionsOverview()
+             {
+                 auctions = list.ToPagedList(page ?? 1,5)
+             };
+             return View(auctions);
+
+        }
+        
+        
+        [Authorize]
+        public async Task<IActionResult> EditAuction(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Auction auction = await this.context.Auctions.Include(a => a.owner).Where(a => a.Id == id).FirstOrDefaultAsync();
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+                
+            if (auction == null || (auction.owner.Id != loggedInUser.Id)) 
+            {
+                return NotFound();
+            }
+
+
+
+            EditAuctionModel model = new EditAuctionModel()
+            {
+                id = auction.Id,
+                name = auction.name,
+                description = auction.description,
+                startPrice = auction.startPrice,
+                openDate = auction.openDate,
+                openTime = auction.openDate.ToString("HH:mm:ss"),
+                closeDate = auction.closeDate,
+                closeTime = auction.closeDate.ToString("HH:mm:ss"),
+            };
+            return View(model);
+
+       
+            
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAuction(EditAuctionModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            string[] arr1 = model.openTime.Split(':',3);
+            string[] arr2 = model.closeTime.Split(':',3);
+
+            TimeSpan ts1 = new TimeSpan(Convert.ToInt32(arr1[0]),  Convert.ToInt32(arr1[1]), Convert.ToInt32(arr1[2]));
+            TimeSpan ts2 = new TimeSpan(Convert.ToInt32(arr2[0]),  Convert.ToInt32(arr2[1]), Convert.ToInt32(arr2[2]));
+
+            model.openDate = model.openDate.Date + ts1;
+            model.closeDate = model.closeDate.Date + ts2; 
+
+            if(DateTime.Compare(DateTime.Now, model.openDate)>0)
+            {
+                ModelState.AddModelError("", "Invalid open date! (minimal time is +5minuts form now)");
+                return View(model);
+            }
+            else if(DateTime.Compare(model.openDate, model.closeDate)>0)
+            {
+                ModelState.AddModelError("", "Close date must be greater than open date!");
+                return View(model);               
+
+            }
+
+            Auction auction = await this.context.Auctions.Where(a => a.Id == model.id).FirstOrDefaultAsync();
+
+            auction.name = model.name;
+            auction.description = model.description;
+            auction.startPrice = model.startPrice;
+            auction.currentPrice = model.startPrice;
+            auction.createDate = DateTime.Now;
+            auction.openDate = model.openDate;
+            auction.closeDate = model.closeDate;
+
+
+            if(model.file==null)
+            {
+                try
+                {
+                    this.context.Update(auction);
+                    await this.context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+               
+                }
+
+            }
+            else
+                using (BinaryReader reader = new BinaryReader (model.file.OpenReadStream ( ))  ) {
+
+
+                    auction.image = reader.ReadBytes ( Convert.ToInt32 ( reader.BaseStream.Length ) );
+
+                    try
+                    {
+                        this.context.Update(auction);
+                        await this.context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                
+                    }
+
+                }
+
+
+
+        
+            return RedirectToAction(nameof(AuctionController.Index), "Auction");   
+
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAuction(int id)
+        {
+
+            Auction auction = await this.context.Auctions.Include(a => a.owner).Where(a => a.Id == id).FirstOrDefaultAsync();
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+                
+            if (auction == null || (auction.owner.Id != loggedInUser.Id) || (!auction.state.Equals("Draft"))) 
+            {
+                return Json(false);
+            }
+
+            try
+            {
+                auction.state="Deleted";
+                this.context.Update(auction);
+                await this.context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
+            return Json(true);
+
+        }
+
+
+
+      private async Task AuctionOpenTask(int auctionId, DateTime openDate)
+      {
+          if(!schedulerStarted)
+          {
+              schedulerStarted = true;
+              this.scheduler = await this.schedulerFactory.GetScheduler();
+              await this.scheduler.Start();
+          }
+
+
+          JobDataMap map = new JobDataMap();
+          map.Add("AuctionId", auctionId);
+
+          IJobDetail job = JobBuilder.Create<AuctionOpenJob>()
+          .SetJobData(map)
+          .Build ();
+	
+
+          ITrigger trigger = TriggerBuilder
+          .Create()
+          .StartAt(new DateTimeOffset(openDate))
+          .Build();
+
+           await this.scheduler.ScheduleJob(job, trigger);
+           
+      }
+
+        
+
+       
+
+       
+
+
 
 
         

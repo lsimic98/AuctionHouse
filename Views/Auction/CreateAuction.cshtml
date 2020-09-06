@@ -1,0 +1,75 @@
+@model AuctionHouse.Models.View.CreateAuctionModel;
+@{
+    ViewData["Title"] = "Create auction";
+}
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync ( "_ValidationScriptsPartial" ); } 
+}
+
+<h1 align="center">Create auction</h1>
+<div class="row justify-content-center">
+    <div class="col-xl-4">
+        <form asp-controller="Auction" asp-action="CreateAuction" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="name" class="control-label"></label>
+                <input asp-for="name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="description" class="control-label"></label>
+                <textarea asp-for="description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="startPrice" class="control-label"></label>
+                <input type="number" min="1" asp-for="startPrice" class="form-control" />
+                <span asp-validation-for="startPrice" class="text-danger"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="openDate" class="control-label"></label>
+                    <input type="date" asp-for="openDate" class="form-control" />
+                    <span asp-validation-for="openDate" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="openTime" class="control-label"></label>
+                    <input type="time" asp-for="openTime" class="form-control" />
+                    <span asp-validation-for="openTime" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="closeDate" class="control-label"></label>
+                    <input type="date" asp-for="closeDate" class="form-control" />
+                    <span asp-validation-for="closeDate" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="closeTime" class="control-label"></label>
+                    <input type="time" asp-for="closeTime" class="form-control" />
+                    <span asp-validation-for="closeTime" class="text-danger"></span>
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <label asp-for="file" class="control-label"></label>
+                <input asp-for="file" class="form-control" />
+                <span asp-validation-for="file" class="text-danger"></span>
+            </div>       
+            <div class="form-group">
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+
+            
+        </form>
+    </div>
+</div>
+
+
+
+
