@@ -40,10 +40,7 @@ namespace AuctionHouse.Controllers{
         }
 
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+
 
         [Authorize]
         public IActionResult CreateAuction()
@@ -131,11 +128,11 @@ namespace AuctionHouse.Controllers{
             return View();
         }
         
-
+        [Authorize]
         public async Task<IActionResult> Auctions(int? page)
         {
              User loggedInUser = await this.userManager.GetUserAsync(base.User);
-             IList<Auction> list = await this.context.Auctions.Where(a => a.owner.Id == loggedInUser.Id).OrderBy(a => a.createDate).ToListAsync();
+             IList<Auction> list = await this.context.Auctions.Where(a => a.owner.Id == loggedInUser.Id).OrderByDescending(a => a.createDate).ToListAsync();
              AuctionsOverview auctions = new AuctionsOverview()
              {
                  auctions = list.ToPagedList(page ?? 1,5)
@@ -269,7 +266,7 @@ namespace AuctionHouse.Controllers{
             Auction auction = await this.context.Auctions.Include(a => a.owner).Where(a => a.Id == id).FirstOrDefaultAsync();
             User loggedInUser = await this.userManager.GetUserAsync(base.User);
                 
-            if (auction == null || (auction.owner.Id != loggedInUser.Id) || (!auction.state.Equals("Draft"))) 
+            if (auction == null || (auction.owner.Id != loggedInUser.Id) || (!auction.state.Equals("Draft")) || (!auction.state.Equals("Expired"))) 
             {
                 return Json(false);
             }
@@ -317,6 +314,98 @@ namespace AuctionHouse.Controllers{
            await this.scheduler.ScheduleJob(job, trigger);
            
       }
+      
+      
+        [Authorize(Roles="Administrator")]
+        public async Task<IActionResult> AuctionValidation(int? page)
+        {
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+                IList<Auction> list = await this.context.Auctions.OrderByDescending(a => a.createDate).ToListAsync();
+                AuctionsOverview auctions = new AuctionsOverview()
+                {
+                    auctions = list.ToPagedList(page ?? 1,5)
+                };
+                return View(auctions);
+        }
+
+        [Authorize(Roles="Administrator")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ValidateAuction(int id)
+        {
+
+            Auction auction = await this.context.Auctions.Where(a => a.Id == id).FirstOrDefaultAsync();
+                
+            if (auction == null || (!auction.state.Equals("Draft"))) 
+            {
+                return Json(false);
+            }
+
+            try
+            {
+                auction.state="Ready";
+                this.context.Update(auction);
+                await this.context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
+            return Json(true);
+
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAuctionAdmin(int id)
+        {
+
+            Auction auction = await this.context.Auctions.Where(a => a.Id == id).FirstOrDefaultAsync();
+        
+            if (auction == null || (!auction.state.Equals("Draft"))) 
+            {
+                return Json(false);
+            }
+
+            try
+            {
+                auction.state="Deleted";
+                this.context.Update(auction);
+                await this.context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
+            return Json(true);
+
+        }
+
+        //Auctions show
+
+        public async Task<IActionResult> Index()
+        {
+
+                IList<Auction> list = await this.context.Auctions.Include(a => a.winner).OrderByDescending(a => a.createDate).ToListAsync();
+                int numOfPages = await this.context.Auctions.CountAsync();
+                AuctionPreviewModel auctions = new AuctionPreviewModel()
+                {
+                    currentPage = 1,
+                    numOfPages = numOfPages,
+                    auctions = list.ToPagedList(1,12)
+                };
+                return View(auctions);
+        }
+
+
+
+        
+
+
+
 
         
 
@@ -326,11 +415,6 @@ namespace AuctionHouse.Controllers{
 
 
 
-
-        
-
-        
+   
     }
-
-  
 }

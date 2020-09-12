@@ -1,13 +1,52 @@
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model AuctionHouse.Models.View.AuctionPreviewModel; 
 @{
     ViewData["Title"] = "Auctions";
+    String imageData;
+    int i = 0;
 }
 
 <div class="row">
     <div class="col-xl-6">
-    
+        <div class="p-2">
+            <h1>Filters</h1>
+            <input class="form-control form-control-lg" type="text" placeholder="Search">                
+        </div>
+
+        <div class="p-2" style="height: 64px;">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="email" class="form-control form-control-lg" id="inputEmail4" placeholder="Min price">
+                </div>
+                <div class="form-group col-md-6">
+                    <input type="password" class="form-control form-control-lg" id="inputPassword4" placeholder="Max price">
+                </div>
+            </div>           
+        </div>
+
+        <div class="p-2">
+            <select id="inputState" class="form-control form-control-lg">
+                <option selected>Status</option>
+                <option>Open</option>
+                <option>Sold</option>
+                <option>Ready</option>
+                <option>Draft</option>
+                <option>Expired</option>
+                <option>Deleted</option>
+            </select>   
+        </div>
+
+        <div class="p-2">
+            <button class="btn btn-primary btn-lg">
+                <i class="fa fa-search" aria-hidden="true"></i> Search
+            </button>
+        </div>
+        
     </div>
     <div class="col-xl-6 d-flex align-items-end flex-column">
          <div class="p-2">
+            <h1><br/></h1>
             <a asp-controller="Auction" asp-action="CreateAuction">
                 <button class="btn btn-primary btn-lg" style="width: 200px;">
                     <i class="fa fa-plus" aria-hidden="true"></i> Create auction
@@ -34,3 +73,68 @@
 
     </div>
 </div>
+
+
+<div class="album py-5 bg-light" style="border: 3px solid black; border-radius: 15px;">
+    <div class="container">
+        <div class="row">
+            @foreach (var item in @Model.auctions)
+            {
+                imageData = Convert.ToBase64String(item.image);
+
+                
+            
+            <div class="col-xl-3">
+              <div class="card mb-4 box-shadow">
+                    <img class="card-img-top" src="data:image/png;base64,@imageData"  alt="Card image cap" style="height: 225px; width: 100%; display: block;">
+                    <div class="card-body" style="height: 75px; text-align: center;">
+                        <div class="card-title" style="font-weight: bold;">@item.name</div>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        @if(item.state.Equals("Open"))
+                        {
+                            i = i +1;
+                            <input type="hidden" id="@Html.Raw("closeTime"+@i)" value="@item.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
+                            <div id="@Html.Raw("time"+@i)" class="list-group-item" style="text-align: center;">--:--:--:--</div>
+
+                        }
+                        else
+                        {
+                            <div class="list-group-item" style="text-align: center;">@item.state</div>
+                        }
+                        
+
+
+                        <div class="list-group-item" style="text-align: center;">@item.currentPrice</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-md btn-outline-success">Bid (+10)</button>
+                            </div>
+                            <div class="text-muted">
+                                @if (@item.winner!=null){
+                                    @Html.Raw(@item.winner.UserName);
+                                }
+                                else{
+                                    @Html.Raw("No bidders yet");
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            }
+
+
+
+        </div>
+    </div>
+</div>
+
+ @section Scripts{
+    <script src="@Url.Content("~/Scripts/index.js")"></script>
+
+}

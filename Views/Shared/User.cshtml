@@ -47,8 +47,12 @@
                     <i class="fa fa-wrench" aria-hidden="true"></i> Admin options
                 </button>
                 <div class="dropdown-menu bg-dark">
-                    <a class="dropdown-item text-info" asp-controller="User" asp-action="LogOut">Auctions Validation</a>
-                    <a class="dropdown-item text-info" asp-controller="User" asp-action="BanUsers">Ban/Unban User</a>
+                    <a class="dropdown-item text-info" asp-controller="Auction" asp-action="AuctionValidation">
+                        <i class="fa fa-check-circle-o" aria-hidden="true"></i> Auction Validation
+                    </a>
+                    <a class="dropdown-item text-info" asp-controller="User" asp-action="BanUsers">
+                        <i class="fa fa-ban" aria-hidden="true"></i> Ban/Unban User
+                    </a>
                 </div>
             </li>
 
