@@ -408,3 +408,4 @@ C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Aucti
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\EditAuction.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\AuctionErrors.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\AuctionValidation.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\AuctionPage.cshtml.g.cs

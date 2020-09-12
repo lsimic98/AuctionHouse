@@ -2,79 +2,10 @@
 @using X.PagedList;
 @model AuctionHouse.Models.View.AuctionPreviewModel; 
 @{
-    ViewData["Title"] = "Auctions";
     String imageData;
     int i = 0;
 }
 
-<div class="row">
-    <div class="col-xl-6">
-        <div class="p-2">
-            <h1>Filters</h1>
-            <input class="form-control form-control-lg" type="text" id="search" placeholder="Search">                
-        </div>
-
-        <div class="p-2" style="height: 64px;">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <input type="number" class="form-control form-control-lg" min="0" id="minPrice" placeholder="Min price">
-                </div>
-                <div class="form-group col-md-6">
-                    <input type="number" class="form-control form-control-lg" min="1" id="maxPrice" placeholder="Max price">
-                </div>
-            </div>           
-        </div>
-
-        <div class="p-2">
-            <select id="state" class="form-control form-control-lg">
-                <option value="null">Status</option>
-                <option value="Open">Open</option>
-                <option value="Sold">Sold</option>
-                <option value="Ready">Ready</option>
-                <option value="Draft">Draft</option>
-                <option value="Expired">Expired</option>
-                <option value="Deleted">Deleted</option>
-            </select>   
-        </div>
-
-        <div class="p-2">
-            <button class="btn btn-primary btn-lg" onclick="jumpToPage('1')">
-                <i class="fa fa-search" aria-hidden="true"></i> Search
-            </button>
-        </div>
-        
-    </div>
-    <div class="col-xl-6 d-flex align-items-end flex-column">
-         <div class="p-2">
-            <h1><br/></h1>
-            <a asp-controller="Auction" asp-action="CreateAuction">
-                <button class="btn btn-primary btn-lg" style="width: 200px;">
-                    <i class="fa fa-plus" aria-hidden="true"></i> Create auction
-                </button>
-            </a>            
-        </div>
-        <div class="p-2">
-            <a asp-controller="Auction" asp-action="Auctions">
-                <button class="btn btn-primary btn-lg" style="width: 200px;">
-                    <i class="fa fa-list-alt" aria-hidden="true"></i> My auctions
-                </button>
-            </a>            
-        </div>
-        <div class="p-2">
-            <a asp-controller="Auction" asp-action="CreateAuction">
-                <button class="btn btn-primary btn-lg" style="width: 200px;">
-                    <i class="fa fa-trophy" aria-hidden="true"></i> Won auctions
-                </button>
-            </a>            
-        </div>
-
-        
-        
-
-    </div>
-</div>
-
-<div id="auctions">
     <div class="album py-5 bg-light" style="border: 3px solid black; border-radius: 15px;">
         <div class="container">
             <div class="row">
@@ -184,7 +115,3 @@
         </nav>
     </div>
 
- @section Scripts{
-    <script src="@Url.Content("~/Scripts/index.js")"></script>
-
-}

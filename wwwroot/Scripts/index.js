@@ -1,3 +1,68 @@
+function jumpToPage(pageNumber)
+{
+
+    var pageNum = parseInt(pageNumber);
+    pageNum = pageNum<=0 ? 1 : pageNum;
+
+    var search = $("#search").val();
+    if(search == "")
+        search = null;
+    
+    var minPrice = $("#minPrice").val();
+    if(minPrice == "")
+        minPrice = null;
+    else
+        minPrice = parseInt(minPrice);
+    if(minPrice<0)
+    {
+        minPrice = 0;
+        $("#minPrice").val(minPrice);
+    }
+
+    var maxPrice = $("#maxPrice").val();
+    if(maxPrice == "")
+        maxPrice = null;
+    else
+        maxPrice = parseInt(maxPrice);
+    if(maxPrice<0)
+    {
+        maxPrice = 1;
+        $("#maxPrice").val(maxPrice);
+    }
+
+    if(maxPrice!=null && minPrice!=null && minPrice>maxPrice)
+    {
+        alert("Max price must be greater than min price, or leave max price empty!");
+    }
+    
+    var state = $("#state").children("option:selected").val();
+    if(state=="null")
+        state=null;
+
+        $.ajax ({  
+            type: "POST", 
+            url: "/Auction/JumpToPage", 
+            data: { 
+                 "pageNumber":pageNum,
+                 "search":search,
+                 "minPrice":minPrice,
+                 "maxPrice":maxPrice,
+                 "state":state
+            },
+            dataType: "text",
+            success: function ( response ) {
+                $("#auctions").html(response);
+                //alert("Page successfully refreshed :D");
+            },
+            error: function ( response ) {
+                alert ( response ) 
+            }
+        });
+}
+
+
+
+
 function countDown()
 {
     var i;

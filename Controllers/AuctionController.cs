@@ -390,14 +390,47 @@ namespace AuctionHouse.Controllers{
         {
 
                 IList<Auction> list = await this.context.Auctions.Include(a => a.winner).OrderByDescending(a => a.createDate).ToListAsync();
-                int numOfPages = await this.context.Auctions.CountAsync();
+                // int numOfPages = await this.context.Auctions.CountAsync();
+                int numOfPages = list.Count;
                 AuctionPreviewModel auctions = new AuctionPreviewModel()
                 {
                     currentPage = 1,
-                    numOfPages = numOfPages,
+                    numOfPages = (int)Math.Ceiling(numOfPages/12.0),
                     auctions = list.ToPagedList(1,12)
                 };
                 return View(auctions);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> JumpToPage(int pageNumber, string search, int? minPrice, int? maxPrice, string state)
+        {
+            IQueryable<Auction> queryBuilder = this.context.Auctions.Include(a => a.winner);
+            if(search!=null)
+            {
+                queryBuilder = queryBuilder.Include(a => a.winner).Where(a => a.name.Contains(search) || a.description.Contains(search));
+            }
+            if(minPrice!=null && minPrice>=0)
+            {
+                queryBuilder = queryBuilder.Where(a => a.currentPrice >= minPrice);
+            }
+            if(maxPrice!=null && maxPrice>0)
+            {
+                queryBuilder = queryBuilder.Where(a => a.currentPrice <= maxPrice);
+            }
+            if(state!=null)
+            {
+                queryBuilder = queryBuilder.Where(a => a.state==state);
+            }
+            IList<Auction> list = await queryBuilder.OrderByDescending(a => a.createDate).ToListAsync();
+            int numOfPages = list.Count;
+            Console.WriteLine(numOfPages);
+            AuctionPreviewModel auctions = new AuctionPreviewModel()
+            {
+                currentPage = pageNumber,
+                numOfPages = (int)Math.Ceiling(numOfPages/12.0),
+                auctions = list.ToPagedList(pageNumber,12)
+            };
+            return PartialView ("AuctionPage", auctions);
         }
 
 

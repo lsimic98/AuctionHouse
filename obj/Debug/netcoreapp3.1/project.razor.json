@@ -14487,6 +14487,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Auction\\AuctionPage.cshtml",
+      "TargetPath": "Views\\Auction\\AuctionPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\User\\LogIn.cshtml",
       "TargetPath": "Views\\User\\LogIn.cshtml",
       "FileKind": "mvc"
