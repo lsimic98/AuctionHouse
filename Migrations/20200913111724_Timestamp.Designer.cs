@@ -4,14 +4,16 @@ using AuctionHouse.Models.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AuctionHouse.Migrations
 {
     [DbContext(typeof(AuctionHouseContext))]
-    partial class AuctionHouseContextModelSnapshot : ModelSnapshot
+    [Migration("20200913111724_Timestamp")]
+    partial class Timestamp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,7 +28,7 @@ namespace AuctionHouse.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<byte[]>("RowVersion")
+                    b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
@@ -292,15 +294,15 @@ namespace AuctionHouse.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "734f0ae5-93b6-43c4-a0de-b398061029cd",
-                            ConcurrencyStamp = "50d8819b-1ba4-4726-b5b4-31a7eb160b57",
+                            Id = "49c91213-60f8-494a-b94d-82766afd33f3",
+                            ConcurrencyStamp = "80ef91bd-8e7a-414b-b601-0964f6da9e41",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "5a102602-cab1-4ec0-865c-465b97c24aea",
-                            ConcurrencyStamp = "ac8050a8-558d-474a-a580-98ac1a4fd595",
+                            Id = "0b00ddb4-63e1-4522-863f-c61f157461b1",
+                            ConcurrencyStamp = "e9d7591c-f27a-4614-b4b6-0141ac273210",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

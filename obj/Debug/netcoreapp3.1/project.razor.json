@@ -14417,6 +14417,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Shared\\SignalRScriptsPartial.cshtml",
+      "TargetPath": "Views\\Shared\\SignalRScriptsPartial.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\User\\UnbanUser.cshtml",
       "TargetPath": "Views\\User\\UnbanUser.cshtml",
       "FileKind": "mvc"
@@ -14464,6 +14469,11 @@
     {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Auction\\EditAuction.cshtml",
       "TargetPath": "Views\\Auction\\EditAuction.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Auction\\AuctionDetail.cshtml",
+      "TargetPath": "Views\\Auction\\AuctionDetail.cshtml",
       "FileKind": "mvc"
     },
     {

@@ -1,0 +1,141 @@
+@model AuctionHouse.Models.Database.Auction
+@{
+    ViewData["Title"] = "Auction detail";
+    var imageData = Convert.ToBase64String(@Model.image);
+}
+<div class="row">
+    <input type="hidden" id="auctionId" value="@Html.Raw(@Model.Id)"/>
+    <table class="table table-responsive-xl">
+    <thead>
+        <tr>
+        <th scope="col" colspan="3" style="font-size: 25px;">Auction detail</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td rowspan="8" width="200">
+                <img src="data:image/png;base64,@imageData"  alt="Card image cap" style="height: 200px;">
+            </td>
+        </tr>
+
+        <tr>
+            <td>Name</td>
+            <td>@Model.name</td>
+        </tr>
+
+        <tr>
+            <td>State/Timelifet</td>
+            <td>
+                @if(Model.state.Equals("Open"))
+                {
+                    <input class="@Html.Raw("closeTime"+@Model.Id)" type="hidden" id="@Html.Raw("closeTime1")" value="@Model.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
+                    <div><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="@Html.Raw("time"+@Model.Id)" id="@Html.Raw("time1")">--:--:--:--</span></div>
+                }
+                else
+                {
+                    <div><span class="@Html.Raw("state"+@Model.Id)">@Model.state</span></div>
+                }         
+            </td>
+        </tr>
+
+        <tr>
+            <td>Current price</td>
+            <td>
+                <div><span class="@Html.Raw("currentPrice"+@Model.Id)">@Model.currentPrice</span></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Last bidder</td>
+            <td>
+                <span class="@Html.Raw("bidder"+@Model.Id)">
+                    @if (@Model.winner!=null){
+                        @Html.Raw(@Model.winner.UserName);
+                    }
+                    else{
+                        @Html.Raw("No bidders yet");
+                    }
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Open date</td>
+            <td>@Model.openDate</td>
+        </tr>
+
+        <tr>
+            <td>Close date</td>
+            <td>@Model.closeDate</td>
+        </tr>
+
+        <tr>
+            <td>Creator</td>
+            <td>@Model.owner.UserName</td>
+        </tr>
+
+    </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="row">
+            <h2>Description</h2>
+        </div>
+        <div class="row">
+            @Model.description
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="row">
+            <h2>Bid</h2>
+        </div>
+        <div class="row">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="number" class="form-control form-control-md" min="0" id="bidOffer" placeholder="Bid offer">
+                </div>
+                <div class="form-group col-md-6">
+                    <button class="btn btn-md btn-outline-success" onclick="collectBidOffer()">
+                        Bid
+                    </button>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="row">
+            <h2>Last 10 bids</h2>
+        </div>
+        <div class="row">
+            <table class="table table-responsive-xl">
+                <thead>
+                    <tr>
+                    <th scope="col"style="font-size: 15px;">#</th>
+                    <th scope="col"style="font-size: 15px;">Bidder name</th>
+                    <th scope="col"style="font-size: 15px;">Bid offer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                
+                </tbody>
+            </table>
+        </div>
+    </div>
+  
+
+</div>
+
+
+ @section Scripts{
+    <script src="@Url.Content("~/Scripts/index.js")"></script>
+
+}
+

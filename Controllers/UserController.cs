@@ -173,7 +173,7 @@ namespace AuctionHouse.Controllers{
         public async Task<IActionResult> LogOut()
         {
             await this.signInManager.SignOutAsync();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(AuctionController.Index), "Auction");
       
         }
         
@@ -181,7 +181,7 @@ namespace AuctionHouse.Controllers{
         public async Task<IActionResult> LogOutPasswordChange()
         {
             await this.signInManager.SignOutAsync();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(AuctionController.Index), "Auction");
         }
 
 

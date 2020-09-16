@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AuctionHouse.Models.Database;
 using AuctionHouse.Models.View;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Quartz;
 using X.PagedList;
 
@@ -431,6 +433,286 @@ namespace AuctionHouse.Controllers{
                 auctions = list.ToPagedList(pageNumber,12)
             };
             return PartialView ("AuctionPage", auctions);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PlaceBid(int auctionId, int bidOffer)
+        {
+            Console.WriteLine("AucrionId:"+auctionId +" BidOffer:"+bidOffer);
+            if(auctionId<=0 || bidOffer<=0)
+            {
+                return  Json(new { success = false, responseText = "Invalid auction or bid offer!" });
+            }
+
+
+
+
+            
+
+
+            User newBidder = await this.userManager.GetUserAsync(base.User);
+
+            // Console.WriteLine("Time to sleep! " + newBidder.UserName);
+            // Thread.Sleep(10000);
+
+
+            Auction auction = this.context.Auctions.Include(a => a.winner).Where(a => a.Id==auctionId).FirstOrDefault();
+
+            Console.WriteLine("Time to sleep! " + newBidder.UserName);
+            Thread.Sleep(10000);
+
+            if(auction==null)
+            {
+                return  Json(new { success = false, responseText = "Error, auction does not exist!" });
+            }
+            else if(!auction.state.Equals("Open"))
+            {
+                return  Json(new { success = false, responseText = "Sorry, the auction is not open!" });
+            }
+
+            int newAuctionPrice = auction.currentPrice + bidOffer;
+
+            byte[] RowVersion = auction.RowVersion;
+
+            User oldBidder = auction.winner;
+            if(newBidder == oldBidder)
+            {
+                return  Json(new { success = false, responseText = "Sorry, you have already placed your bid offer!" });
+            }
+
+            if(newBidder.tokens - newAuctionPrice < 0)
+            {
+                return  Json(new { success = false, responseText = "Sorry, you dont have enought tokens on your account!" });
+            }
+
+            auction.currentPrice = auction.currentPrice + bidOffer;
+       
+            // newBidder.tokens -= newAuctionPrice;
+            auction.winner = newBidder;
+
+             
+            TimeSpan timeLeft = auction.closeDate - DateTime.Now; //ArgumentOutOfRangeException e
+            if(timeLeft.TotalSeconds <= 10)
+            {
+                auction.createDate.AddSeconds(10);
+            }
+
+
+  
+            bool saved = false;
+            while (!saved)
+            {
+
+                try
+                {
+                    // Attempt to save changes to the database
+                    // if(oldBidder!=null)
+                    // {
+                    //     oldBidder.tokens = oldBidder.tokens + auction.currentPrice - bidOffer;
+                    //     this.context.Update(oldBidder);
+                    // }
+                    this.context.Update(auction);
+                    // this.context.Update(newBidder);     
+                    this.context.SaveChanges();
+                    saved = true;
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+
+                    Console.WriteLine("Puce izuzetak!");
+                    Console.WriteLine(ex.ToString());
+
+                    return Json(new { success = false, responseText = "Sorry, someone was faster than you, hehe !!!" });
+
+                    // foreach (var entry in ex.Entries)
+                    // {
+                    //     if (entry.Entity is Auction)
+                    //     {
+                    //         var proposedValues = entry.CurrentValues;
+                    //         var databaseValues = entry.GetDatabaseValues();
+
+                    //         // Console.WriteLine("var proposedValues = entry.CurrentValues;\n\t"+proposedValues.ToObject().ToString());
+                    //         // Console.WriteLine("var databaseValues = entry.GetDatabaseValues();\n\t"+databaseValues.ToObject().ToString());  
+
+
+                    //         int proposedValue_currentPrice = 0;
+                    //         int databaseValue_currentPrice = 0;
+
+                    //         string proposedValue_winnerId = "";
+                    //         string databaseValue_winnerId = "";
+
+                    //         IProperty currentPriceProperty = null;
+                    //         IProperty winnerIdProperty = null;
+
+
+                    //         foreach (var property in proposedValues.Properties)
+                    //         {
+                    //             if(property.Name.Equals("currentPrice"))
+                    //             {
+                    //                 proposedValue_currentPrice = Convert.ToInt32(proposedValues[property]);
+                    //                 databaseValue_currentPrice = Convert.ToInt32(databaseValues[property]);
+                    //                 currentPriceProperty = property;
+                    
+                    //             }
+                    //             if(property.Name.Equals("winnerId"))
+                    //             {
+                    //                 proposedValue_winnerId = proposedValues[property].ToString();
+                    //                 databaseValue_winnerId = databaseValues[property].ToString();
+                    //                 winnerIdProperty = property;
+                    
+                    //             }
+
+                    //             // Console.WriteLine("DatabaseValues\n\t" + property.Name + " " + databaseValues[property]);
+                    //             // Console.WriteLine("ProposedValues\n\t" + property.Name + " " + proposedValues[property]);
+
+                                
+
+                    //             // TODO: decide which value should be written to database
+                    //             // proposedValues[property] = <value to be saved>;
+                    //         }
+
+                    //         if(currentPriceProperty!=null && winnerIdProperty!=null && proposedValue_currentPrice > databaseValue_currentPrice)
+                    //         {
+                    //             proposedValues[currentPriceProperty] = proposedValue_currentPrice;
+                    //             proposedValues[winnerIdProperty] = proposedValue_winnerId;
+                    //         }
+                    //         else if(currentPriceProperty!=null && winnerIdProperty!=null)
+                    //         {
+                    //             proposedValues[currentPriceProperty] = databaseValue_currentPrice;
+                    //             proposedValues[winnerIdProperty] = databaseValue_winnerId;
+                    //         }
+
+                
+
+                    //         // Refresh original values to bypass next concurrency check
+                    //         entry.OriginalValues.SetValues(databaseValues);
+                    //         //entry.CurrentValues.SetValues(proposedValues);
+                    //     }
+                    //     else
+                    //     {
+                    //         throw new NotSupportedException(
+                    //             "Don't know how to handle concurrency conflicts for "
+                    //             + entry.Metadata.Name);
+                    //     }
+                    // }
+                }
+            }
+
+            newBidder.tokens -= newAuctionPrice;
+            if(oldBidder!=null)
+            {
+                oldBidder.tokens += newAuctionPrice - bidOffer;
+                this.context.Update(oldBidder);
+            }
+            this.context.Update(newBidder);
+
+
+            Bid bid = new Bid()
+            {
+                auctionId = auction.Id,
+                auction = auction,
+                userId = newBidder.Id,
+                user = newBidder,
+                bidDate = DateTime.Now,
+                price = newAuctionPrice
+            };
+            await this.context.AddAsync(bid);
+
+            await this.context.SaveChangesAsync();
+
+            return Json(new {
+            success = true,
+            auctionId = auction.Id, 
+            newCurrentPrice = auction.currentPrice, 
+            bidder = auction.winner.UserName, 
+            newCloseTime = auction.closeDate.ToString("yyyy,MM,d,H,m,s")
+        });
+
+
+
+            
+            // this.context.Update(auction.winner);
+            // await this.context.SaveChangesAsync();
+
+            // if(auction!=null && auction.winner!=null && auction.winner==newBidder)
+            // {
+            //     newBidder.tokens -= newAuctionPrice;
+            //         if(oldBidder!=null)
+            //         {
+            //             oldBidder.tokens += newAuctionPrice - bidOffer;
+            //             this.context.Update(oldBidder);
+            //         }
+            //             this.context.Update(newBidder);
+            //             await this.context.SaveChangesAsync();
+
+            //             return Json(new {
+            //             success = true, 
+            //             newCurrentPrice = auction.currentPrice, 
+            //             bidder = auction.winner.UserName, 
+            //             newCloseTime = auction.closeDate.ToString("yyyy,MM,d,H,m,s")
+            //         });
+            
+            // }
+            // else
+            // {
+            //    return Json(false);
+            // }
+
+
+            // try
+            // {
+            // if(auction.winner==null)
+            //     Console.WriteLine("Puko izuzetak NULL!");
+
+            
+            //     return Json(new {
+            //         success = true, 
+            //         newCurrentPrice = auction.currentPrice, 
+            //         bidder = auction.winner.UserName, 
+            //         newCloseTime = auction.closeDate.ToString("yyyy,MM,d,H,m,s")
+            //     });
+
+            // }
+            // catch(Exception e)
+            // {
+            //     Console.WriteLine("E ovde me zeza!");
+            //     Console.WriteLine(e.ToString());
+
+            //     return Json(new {
+            //         success = false, 
+            //         newCurrentPrice = auction.currentPrice, 
+            //         bidder = auction.winner.UserName, 
+            //         newCloseTime = auction.closeDate.ToString("yyyy,MM,d,H,m,s")
+            //     });
+            // }
+        
+            
+    
+
+        }
+
+        public async Task<IActionResult> AuctionDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            
+            Auction auction = await this.context.Auctions.Include(a => a.owner).Include(a => a.winner)
+            .Where(a => a.Id == id).FirstOrDefaultAsync();
+
+                
+            if (auction == null) 
+            {
+                return NotFound();
+            }
+            else
+                return View(auction);
+
+
         }
 
 

@@ -7,6 +7,8 @@
     int i = 0;
 }
 
+@{ await Html.RenderPartialAsync ( "SignalRScriptsPartial" ); }
+
 <div class="row">
     <div class="col-xl-6">
         <div class="p-2">
@@ -27,7 +29,7 @@
 
         <div class="p-2">
             <select id="state" class="form-control form-control-lg">
-                <option value="null">Status</option>
+                <option value="null">Choose state</option>
                 <option value="Open">Open</option>
                 <option value="Sold">Sold</option>
                 <option value="Ready">Ready</option>
@@ -75,7 +77,7 @@
 </div>
 
 <div id="auctions">
-    <div class="album py-5 bg-light" style="border: 3px solid black; border-radius: 15px;">
+    <div class="album py-5 bg-light" style="border: 3px solid; border-color: #8c8c8c; border-radius: 10px;">
         <div class="container">
             <div class="row">
                 @foreach (var item in @Model.auctions)
@@ -86,7 +88,9 @@
                 
                 <div class="col-xl-3">
                 <div class="card mb-4 box-shadow">
-                        <img class="card-img-top" src="data:image/png;base64,@imageData"  alt="Card image cap" style="height: 225px; width: 100%; display: block;">
+                        <a class="navbar-brand" asp-area="Auction detail" asp-controller="Auction" asp-action="AuctionDetail" asp-route-id="@item.Id">
+                            <img class="card-img-top" src="data:image/png;base64,@imageData"  alt="Card image cap" style="height: 225px; width: 100%; display: block;">
+                        </a>
                         <div class="card-body" style="height: 75px; text-align: center;">
                             <div class="card-title" style="font-weight: bold;">@item.name</div>
                         </div>
@@ -94,32 +98,31 @@
                             @if(item.state.Equals("Open"))
                             {
                                 i = i +1;
-                                <input type="hidden" id="@Html.Raw("closeTime"+@i)" value="@item.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
-                                <div id="@Html.Raw("time"+@i)" class="list-group-item" style="text-align: center;">--:--:--:--</div>
+                                <input class="@Html.Raw("closeTime"+@item.Id)" type="hidden" id="@Html.Raw("closeTime"+@i)" value="@item.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
+                                <div class="list-group-item" style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="@Html.Raw("time"+@item.Id)" id="@Html.Raw("time"+@i)">--:--:--:--</span></div>
 
                             }
                             else
                             {
-                                <div class="list-group-item" style="text-align: center;">@item.state</div>
+                                <div class="list-group-item" style="text-align: center;"><span class="@Html.Raw("state"+@item.Id)">@item.state</span></div>
                             }
                             
-
-
-                            <div class="list-group-item" style="text-align: center;">@item.currentPrice</div>
+                            <div class="list-group-item" style="text-align: center;"><span class="@Html.Raw("currentPrice"+@item.Id)">@item.currentPrice</span></div>
                         </div>
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-md btn-outline-success">Bid (+10)</button>
+                                    <button type="button" class="btn btn-md btn-outline-success" onclick="bid('@item.Id','10')">Bid (+10)</button>
                                 </div>
                                 <div class="text-muted">
-                                    @if (@item.winner!=null){
-                                        @Html.Raw(@item.winner.UserName);
-                                    }
-                                    else{
-                                        @Html.Raw("No bidders yet");
-                                    }
-
+                                    <span class="@Html.Raw("bidder"+@item.Id)">
+                                        @if (@item.winner!=null){
+                                            @Html.Raw(@item.winner.UserName);
+                                        }
+                                        else{
+                                            @Html.Raw("No bidders yet");
+                                        }
+                                    </span>
                                 </div>
                             </div>
                         </div>

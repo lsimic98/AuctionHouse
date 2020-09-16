@@ -1,3 +1,32 @@
+//SignalR sheet
+
+var connection = new signalR.HubConnectionBuilder ( ).withUrl ( "/update" ).build ( );
+
+
+function handleError(error)
+{
+    alert(error);
+}
+
+connection.start().then(
+    function()
+    {
+        alert("Connecton started!");
+    }
+    ).catch(handleError);
+
+
+
+
+
+
+
+
+
+
+
+
+//Bid and timer
 function jumpToPage(pageNumber)
 {
 
@@ -60,7 +89,85 @@ function jumpToPage(pageNumber)
         });
 }
 
+function bid(aId, bOffer)
+{
+    var auctionId = parseInt(aId);
+    var bidOffer = parseInt(bOffer);
+    var verificationToken = $("input[name='__RequestVerificationToken']").val( );
 
+
+    if(auctionId<=0 || bidOffer<=0)
+    {
+        alert("Sorry invalid auctionId or bidOffer!");
+    }
+    else
+    {
+       // alert(auctionId + " " + bidOffer + "\n" + verificationToken);
+        var bid = 
+        {
+            auctionId : auctionId,
+            bidOffer : bidOffer
+            // "__RequestVerificationToken" : verificationToken
+        };
+        $.ajax ({  
+            type: "POST", 
+            url: "/Auction/PlaceBid",
+            data: {
+                "auctionId" : auctionId,
+                "bidOffer" : bidOffer,
+                "__RequestVerificationToken" : verificationToken
+            },
+            dataType: "json",
+            success: function ( response ) {
+                // alert("Success occured!\n" + response);
+                $(".closeTime"+auctionId).val(response.newCloseTime);
+                $(".currentPrice"+auctionId).val(response.newCurrentPrice);
+                $(".bidder"+auctionId).val(response.bidder);
+                // alert(" " + response.auctionId + " "  + response.bidder + " " + response.newCurrentPrice + " " + response.newCloseTime);
+                connection.invoke("NewBidOffered",parseInt(response.auctionId), parseInt(response.newCurrentPrice), response.bidder, response.newCloseTime);
+
+            },
+            error: function ( response ) {
+                // alert("An error occured\n" + response);
+                //alert (response.responseText) 
+            }
+        });   
+
+     
+
+
+
+    }
+        
+
+    
+
+}
+
+function collectBidOffer()
+{
+    var auctionId = $("#auctionId").val();
+    var bidOffer = $("#bidOffer").val();
+
+    if(bidOffer==null || auctionId==null)
+    {
+        alert("Error invalid input!");
+    }
+    else
+    {
+        auctionId = parseInt(auctionId);
+        bidOffer = parseInt(bidOffer);
+        if(bidOffer<=0 || auctionId<=0)
+        {
+            alert("Error invalid input!");
+            $("#bidOffer").val(1);
+        }
+        else
+        {   
+            bid(auctionId, bidOffer);
+        }
+    }
+}
 
 
 function countDown()
@@ -70,7 +177,7 @@ function countDown()
     {
         var string = $("#closeTime"+i).val();
         if(string==null)
-            break;
+            continue;
         
            
         var array = string.split(",");
@@ -123,4 +230,26 @@ function countDown()
     
 }
 setInterval(countDown,1000);
+
+
+
+
+//SignalR sheet
+
+connection.on(
+    "updateAuction", 
+    function (auctionId, newCurrentPrice, winnerUsername, newCloseDate){
+
+        var Id = parseInt(auctionId);
+        var price = parseInt(newCurrentPrice);
+
+        $(".closeTime"+Id).val(newCloseDate);
+        $(".currentPrice"+Id).text(price);
+        $(".bidder"+Id).text(winnerUsername);
+
+
+
+    }
+
+);
 

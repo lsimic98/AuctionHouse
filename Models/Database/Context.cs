@@ -34,6 +34,11 @@ namespace AuctionHouse.Models.Database{
                 .HasMany(u => u.AuctionOwners)
                 .WithOne(a => a.owner);
 
+                builder.Entity<Auction>()
+                .Property(a => a.RowVersion)
+                .IsConcurrencyToken()
+                .ValueGeneratedOnAddOrUpdate();
+
             builder.ApplyConfiguration(new IdentityRoleConfiguration());
             builder.ApplyConfiguration(new BagTokenConfiguration());
             builder.ApplyConfiguration(new TokenTransactionConfiguration());           

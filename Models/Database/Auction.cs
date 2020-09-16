@@ -37,6 +37,10 @@ namespace AuctionHouse.Models.Database{
         [Required]
         public string state{get; set;} //Draft, Ready, Open, Sold, Expired i Deleted
 
+    
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
 
         public User winner {get; set;} 
         public User owner {get; set;}

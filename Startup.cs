@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuctionHouse.Factories;
+using AuctionHouse.Hubs;
 using AuctionHouse.Models.Database;
 using AuctionHouse.Models.Initializers;
 using AutoMapper;
@@ -81,6 +82,8 @@ namespace AuctionHouse
             );
             services.AddScoped<IUserClaimsPrincipalFactory<User>, ClaimFactory>();
 
+            services.AddSignalR();
+
             services.AddControllersWithViews();
         }
 
@@ -108,6 +111,7 @@ namespace AuctionHouse
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<AuctionHub>("/update");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Auction}/{action=Index}/{id?}");
