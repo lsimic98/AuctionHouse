@@ -14492,6 +14492,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Auction\\WonAuctions.cshtml",
+      "TargetPath": "Views\\Auction\\WonAuctions.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Kalu\\Desktop\\IEP\\AuctionHouse\\Views\\Auction\\AuctionValidation.cshtml",
       "TargetPath": "Views\\Auction\\AuctionValidation.cshtml",
       "FileKind": "mvc"

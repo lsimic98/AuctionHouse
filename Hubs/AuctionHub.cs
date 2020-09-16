@@ -10,6 +10,11 @@ namespace AuctionHouse.Hubs
             await base.Clients.All.SendAsync("updateAuction", auctionId, newCurrentPrice, winnerUsername, newCloseDate);
 
         }
+        public async Task AuctionClosed(int auctionId, string newState)
+        {
+            await base.Clients.All.SendAsync("closeAuction", auctionId, newState);
+
+        }
     }
 
 }

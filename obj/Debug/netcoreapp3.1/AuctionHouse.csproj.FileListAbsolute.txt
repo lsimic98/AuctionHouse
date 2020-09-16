@@ -412,3 +412,4 @@ C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Aucti
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\AuctionDetail.cshtml.g.cs
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\bin\Debug\netcoreapp3.1\libman.json
 C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Shared\SignalRScriptsPartial.cshtml.g.cs
+C:\Users\Kalu\Desktop\IEP\AuctionHouse\obj\Debug\netcoreapp3.1\Razor\Views\Auction\WonAuctions.cshtml.g.cs

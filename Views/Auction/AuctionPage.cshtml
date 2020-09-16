@@ -17,22 +17,30 @@
                 
                 <div class="col-xl-3">
                 <div class="card mb-4 box-shadow">
-                        <img class="card-img-top" src="data:image/png;base64,@imageData"  alt="Card image cap" style="height: 225px; width: 100%; display: block;">
+                       @{
+                            i = i + 1;
+                        }
+                        <input type="hidden" id="@Html.Raw("auctionId"+@i)" value="@item.Id"/>
+                        <a class="navbar-brand" asp-area="Auction detail" asp-controller="Auction" asp-action="AuctionDetail" asp-route-id="@item.Id">
+                            <img class="card-img-top" src="data:image/png;base64,@imageData"  alt="Card image cap" style="height: 225px; width: 100%; display: block;">
+                        </a>
                         <div class="card-body" style="height: 75px; text-align: center;">
                             <div class="card-title" style="font-weight: bold;">@item.name</div>
                         </div>
                         <div class="list-group list-group-flush">
-                            @if(item.state.Equals("Open"))
-                            {
-                                i = i +1;
-                                <input class="@Html.Raw("closeTime"+@item.Id)" type="hidden" id="@Html.Raw("closeTime"+@i)" value="@item.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
-                                <div class="list-group-item" style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="@Html.Raw("time"+@item.Id)" id="@Html.Raw("time"+@i)">--:--:--:--</span></div>
+                            <div id="@Html.Raw("state"+@item.Id)">
+                                @if(item.state.Equals("Open"))
+                                {
+                                   
+                                    <input class="@Html.Raw("closeTime"+@item.Id)" type="hidden" id="@Html.Raw("closeTime"+@i)" value="@item.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
+                                    <div class="list-group-item" style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="@Html.Raw("time"+@item.Id)" id="@Html.Raw("time"+@i)">--:--:--:--</span></div>
 
-                            }
-                            else
-                            {
-                                <div class="list-group-item" style="text-align: center;"><span class="@Html.Raw("state"+@item.Id)">@item.state</span></div>
-                            }
+                                }
+                                else
+                                {
+                                    <div class="list-group-item" style="text-align: center;"><span class="@Html.Raw("state"+@item.Id)">@item.state</span></div>
+                                }
+                            </div>
                             
                             <div class="list-group-item" style="text-align: center;"><span class="@Html.Raw("currentPrice"+@item.Id)">@item.currentPrice</span></div>
                        
@@ -40,7 +48,14 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-md btn-outline-success" onclick="bid('@item.Id','10')">Bid (+10)</button>
+                                    <div id="@Html.Raw("bidButton"+@item.Id)">
+                                        @if(item.state.Equals("Open") && item.owner.Id != Model.userId){
+                                            <button type="button" class="btn btn-md btn-outline-success" onclick="bid('@item.Id','10')">Bid (+10)</button>
+                                        }
+                                        else{
+                                            <button type="button" class="btn btn-md btn-outline-secondary" disabled>&nbsp;Bid&nbsp;</button>
+                                        }
+                                    </div>
                                 </div>
                                 <div class="text-muted">
                                     <span class="@Html.Raw("bidder"+@item.Id)">

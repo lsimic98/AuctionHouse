@@ -11,7 +11,7 @@ function handleError(error)
 connection.start().then(
     function()
     {
-        alert("Connecton started!");
+       // alert("Connecton started!");
     }
     ).catch(handleError);
 
@@ -186,15 +186,44 @@ function countDown()
         // alert(array[0] + " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " +array[5] + " " +0);
         var now = new Date();
         // var eventDate = new Date(parseInt(array[0]), parseInt(array[1]), parseInt(array[2]), parseInt(array[3]), parseInt(array[4]), parseInt(array[5]), 0);
-        var eventDate = new Date(array[0], array[1], array[2], array[3], array[4], array[5], 0);
-       
+        var eventDate = new Date(array[0], array[1] - 1, array[2], array[3], array[4], array[5]);
 
-        
+
+        //Jebali vas nulti meszeci mamu vam jebem, picka vam amterina, NULTI MESEC, mrs 
+
+
+       
 
         var currentTime = now.getTime();
         var eventTime = eventDate.getTime();
 
         var remTime = eventTime - currentTime;
+
+        // alert(currentTime + "\n" + eventTime);
+
+        if(i==1){
+            console.log(array[0], array[1], array[2], array[3], array[4], array[5]);
+
+            console.log(eventDate);
+
+            console.log(now);
+
+            console.log(remTime);
+
+            // console.log(eventDate - now);
+
+            console.log(eventTime - currentTime);
+        }
+
+        // alert(remTime);
+        if(eventTime - currentTime  < 0)
+        {
+            // alert("what?");
+            var auctionId = $("#auctionId"+i).val();
+            auctionId = parseInt(auctionId);
+            closeAuction(auctionId);
+            continue;
+        }
 
         
 
@@ -208,7 +237,7 @@ function countDown()
         s %= 60;
         d %= 30;
 
-        h = h - 1 < 0 ? 0 : h-1; //Iz nekog razloga zuri 1h
+        // h = h - 1 < 0 ? 0 : h-1; //Iz nekog razloga zuri 1h
 
     
 
@@ -232,6 +261,34 @@ function countDown()
 setInterval(countDown,1000);
 
 
+function closeAuction(auctionId){
+    var aId = parseInt(auctionId);
+    var verificationToken = $("input[name='__RequestVerificationToken']").val( );
+    $.ajax ({  
+        type: "POST", 
+        url: "/Auction/CloseAuction",
+        data: {
+            "auctionId" : aId,
+            "__RequestVerificationToken" : verificationToken
+        },
+        dataType: "json",
+        success: function ( response ) {
+            alert("Success occured!\n" + response);
+            $("#state"+auctionId).html("<div class='list-group-item' style='text-align: center;'>" + response.newState + "</div>");
+            $("#bidButton"+auctionId).val("<button type='button' class='btn btn-md btn-outline-secondary disabled>&nbsp;Bid&nbsp;</button>");
+
+            // alert(" " + response.auctionId + " "  + response.bidder + " " + response.newCurrentPrice + " " + response.newCloseTime);
+            connection.invoke("AuctionClosed",parseInt(response.auctionId), response.newState);
+
+        },
+        error: function ( response ) {
+            // alert("An error occured\n" + response);
+            //alert (response.responseText) 
+        }
+    });   
+
+}
+
 
 
 //SignalR sheet
@@ -250,6 +307,19 @@ connection.on(
 
 
     }
+
+);
+connection.on(
+    "closeAuction",
+    function (auctionId, newState){
+
+        var Id = parseInt(auctionId);
+
+        $("#state"+Id).html("<div class='list-group-item' style='text-align: center;'>" + newState + "</div>");
+        $("#bidButton"+Id).val("<button type='button' class='btn btn-md btn-outline-secondary' disabled>&nbsp;Bid&nbsp;</button>");
+
+    }
+
 
 );
 

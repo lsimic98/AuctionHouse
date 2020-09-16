@@ -9,6 +9,7 @@ namespace AuctionHouse.Models.View
     {
         public int currentPage {get;set;}
         public int numOfPages {get; set;}
+        public string userId {get; set;}
         public IPagedList<Auction> auctions {get; set;}
     }
 }

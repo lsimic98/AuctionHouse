@@ -83,12 +83,12 @@ namespace AuctionHouse.Controllers{
             model.openDate = model.openDate.Date + ts1;
             model.closeDate = model.closeDate.Date + ts2; 
 
-            if(DateTime.Compare(DateTime.Now, model.openDate)>0)
-            {
-                ModelState.AddModelError("", "Invalid open date! (minimal time is +5minuts form now)");
-                return View(model);
-            }
-            else if(DateTime.Compare(model.openDate, model.closeDate)>0)
+            // if(DateTime.Compare(DateTime.Now, model.openDate)>0)
+            // {
+            //     ModelState.AddModelError("", "Invalid open date! (minimal time is +5minuts form now)");
+            //     return View(model);
+            // }
+            if(DateTime.Compare(model.openDate, model.closeDate)>0)
             {
                 ModelState.AddModelError("", "Close date must be greater than open date!");
                 return View(model);               
@@ -390,15 +390,16 @@ namespace AuctionHouse.Controllers{
 
         public async Task<IActionResult> Index()
         {
-
-                IList<Auction> list = await this.context.Auctions.Include(a => a.winner).OrderByDescending(a => a.createDate).ToListAsync();
+                User loggedInUser = await this.userManager.GetUserAsync(base.User);
+                IList<Auction> list = await this.context.Auctions.Include(a => a.winner).Include(a => a.owner).OrderByDescending(a => a.createDate).ToListAsync();
                 // int numOfPages = await this.context.Auctions.CountAsync();
                 int numOfPages = list.Count;
                 AuctionPreviewModel auctions = new AuctionPreviewModel()
                 {
                     currentPage = 1,
                     numOfPages = (int)Math.Ceiling(numOfPages/12.0),
-                    auctions = list.ToPagedList(1,12)
+                    auctions = list.ToPagedList(1,12),
+                    userId = loggedInUser.Id
                 };
                 return View(auctions);
         }
@@ -406,7 +407,7 @@ namespace AuctionHouse.Controllers{
         [HttpPost]
         public async Task<IActionResult> JumpToPage(int pageNumber, string search, int? minPrice, int? maxPrice, string state)
         {
-            IQueryable<Auction> queryBuilder = this.context.Auctions.Include(a => a.winner);
+            IQueryable<Auction> queryBuilder = this.context.Auctions.Include(a => a.winner).Include(a => a.owner);
             if(search!=null)
             {
                 queryBuilder = queryBuilder.Include(a => a.winner).Where(a => a.name.Contains(search) || a.description.Contains(search));
@@ -423,6 +424,7 @@ namespace AuctionHouse.Controllers{
             {
                 queryBuilder = queryBuilder.Where(a => a.state==state);
             }
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
             IList<Auction> list = await queryBuilder.OrderByDescending(a => a.createDate).ToListAsync();
             int numOfPages = list.Count;
             Console.WriteLine(numOfPages);
@@ -430,7 +432,8 @@ namespace AuctionHouse.Controllers{
             {
                 currentPage = pageNumber,
                 numOfPages = (int)Math.Ceiling(numOfPages/12.0),
-                auctions = list.ToPagedList(pageNumber,12)
+                auctions = list.ToPagedList(pageNumber,12),
+                userId = loggedInUser.Id
             };
             return PartialView ("AuctionPage", auctions);
         }
@@ -461,7 +464,7 @@ namespace AuctionHouse.Controllers{
             Auction auction = this.context.Auctions.Include(a => a.winner).Where(a => a.Id==auctionId).FirstOrDefault();
 
             Console.WriteLine("Time to sleep! " + newBidder.UserName);
-            Thread.Sleep(10000);
+            // Thread.Sleep(10000);
 
             if(auction==null)
             {
@@ -493,10 +496,11 @@ namespace AuctionHouse.Controllers{
             auction.winner = newBidder;
 
              
-            TimeSpan timeLeft = auction.closeDate - DateTime.Now; //ArgumentOutOfRangeException e
+            TimeSpan timeLeft = auction.closeDate.Subtract(DateTime.Now); //ArgumentOutOfRangeException e
             if(timeLeft.TotalSeconds <= 10)
             {
-                auction.createDate.AddSeconds(10);
+                Console.WriteLine("Less than 10 seconds left!");
+                auction.closeDate = auction.closeDate.AddSeconds(10);
             }
 
 
@@ -714,6 +718,78 @@ namespace AuctionHouse.Controllers{
 
 
         }
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CloseAuction(int auctionId)
+        {
+
+            Console.WriteLine("Auction " + auctionId + "is closing!");
+
+            if(auctionId<=0)
+            {
+                return NotFound();
+            }
+
+            Auction auction = await this.context.Auctions.Include(a => a.winner).Where(a => a.Id == auctionId).FirstOrDefaultAsync();
+
+            if(auction == null)
+            {
+                return NotFound();
+            }
+
+            if(auction.winner != null)
+                auction.state = "Sold";
+            else
+                auction.state = "Expired";
+
+            try
+            {
+                this.context.Update(auction);
+                await this.context.SaveChangesAsync();
+
+            }
+            catch(DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return Json(new { success = false, responseText = "Someone already close auction, thanks for participating my bro!" });
+
+            }
+
+
+            return Json(new {
+                success = true,
+                auctionId = auction.Id,
+                newState = auction.state
+            });
+
+
+
+
+
+        
+        }
+
+
+        [Authorize]
+        public async Task<IActionResult> WonAuctions()
+        {
+
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+            IList<Auction> list = await this.context.Auctions.Include(a => a.winner).Include(a => a.owner).Where(a=>a.winner.Id == loggedInUser.Id)
+                                            .OrderByDescending(a => a.createDate).ToListAsync();
+            AuctionPreviewModel auctions = new AuctionPreviewModel()
+            {
+                currentPage = 1,
+                numOfPages = 1,
+                auctions = list.ToPagedList(),
+                userId = loggedInUser.Id
+            };
+            
+            return View(auctions);
+
+        }
+        
 
 
 
