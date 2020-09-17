@@ -399,7 +399,7 @@ namespace AuctionHouse.Controllers{
                     currentPage = 1,
                     numOfPages = (int)Math.Ceiling(numOfPages/12.0),
                     auctions = list.ToPagedList(1,12),
-                    userId = loggedInUser.Id
+                    userId = (loggedInUser==null ? "" : loggedInUser.Id)
                 };
                 return View(auctions);
         }
@@ -433,7 +433,7 @@ namespace AuctionHouse.Controllers{
                 currentPage = pageNumber,
                 numOfPages = (int)Math.Ceiling(numOfPages/12.0),
                 auctions = list.ToPagedList(pageNumber,12),
-                userId = loggedInUser.Id
+                userId = (loggedInUser==null ? "" : loggedInUser.Id)
             };
             return PartialView ("AuctionPage", auctions);
         }
@@ -461,7 +461,7 @@ namespace AuctionHouse.Controllers{
             // Thread.Sleep(10000);
 
 
-            Auction auction = this.context.Auctions.Include(a => a.winner).Where(a => a.Id==auctionId).FirstOrDefault();
+            Auction auction = this.context.Auctions.Include(a => a.winner).Include(a => a.owner).Where(a => a.Id==auctionId).FirstOrDefault();
 
             Console.WriteLine("Time to sleep! " + newBidder.UserName);
             // Thread.Sleep(10000);
@@ -473,6 +473,11 @@ namespace AuctionHouse.Controllers{
             else if(!auction.state.Equals("Open"))
             {
                 return  Json(new { success = false, responseText = "Sorry, the auction is not open!" });
+            }
+            
+            if(auction.owner.Id == newBidder.Id)
+            {
+                return  Json(new { success = false, responseText = "You can't offfer bid on your auctions :3" });
             }
 
             int newAuctionPrice = auction.currentPrice + bidOffer;
@@ -707,6 +712,15 @@ namespace AuctionHouse.Controllers{
             
             Auction auction = await this.context.Auctions.Include(a => a.owner).Include(a => a.winner)
             .Where(a => a.Id == id).FirstOrDefaultAsync();
+
+            
+
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+
+            List<Bid> bidsList = await this.context.Bids.Include(b => b.user).Where(b => b.auctionId == id).OrderByDescending(b => b.bidDate).Take(10).ToListAsync();
+
+            ViewBag.userId = (loggedInUser==null ? "" : loggedInUser.Id);
+            ViewBag.bidList = bidsList;
 
                 
             if (auction == null) 

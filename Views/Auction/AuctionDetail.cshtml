@@ -2,7 +2,11 @@
 @{
     ViewData["Title"] = "Auction detail";
     var imageData = Convert.ToBase64String(@Model.image);
+    int i =0;
 }
+
+@{ await Html.RenderPartialAsync ( "SignalRScriptsPartial" ); }
+
 <div class="row">
     <input type="hidden" id="auctionId" value="@Html.Raw(@Model.Id)"/>
     <table class="table table-responsive-xl">
@@ -28,15 +32,17 @@
             <input type="hidden" id="@Html.Raw("auctionId1")" value="@Model.Id"/>
             <td>State/Timelifet</td>
             <td>
-                @if(Model.state.Equals("Open"))
-                {
-                    <input class="@Html.Raw("closeTime"+@Model.Id)" type="hidden" id="@Html.Raw("closeTime1")" value="@Model.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
-                    <div><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="@Html.Raw("time"+@Model.Id)" id="@Html.Raw("time1")">--:--:--:--</span></div>
-                }
-                else
-                {
-                    <div><span class="@Html.Raw("state"+@Model.Id)">@Model.state</span></div>
-                }         
+                <div id="@Html.Raw("state"+@Model.Id)">
+                    @if(Model.state.Equals("Open"))
+                    {
+                        <input class="@Html.Raw("closeTime"+@Model.Id)" type="hidden" id="@Html.Raw("closeTime1")" value="@Model.closeDate.ToString("yyyy,MM,d,H,m,s")"/>
+                        <div><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="@Html.Raw("time"+@Model.Id)" id="@Html.Raw("time1")">--:--:--:--</span></div>
+                    }
+                    else
+                    {
+                        <div><span class="@Html.Raw("state"+@Model.Id)">@Model.state</span></div>
+                    }
+                </div>         
             </td>
         </tr>
 
@@ -100,9 +106,14 @@
                     <input type="number" class="form-control form-control-md" min="0" id="bidOffer" placeholder="Bid offer">
                 </div>
                 <div class="form-group col-md-6">
-                    <button class="btn btn-md btn-outline-success" onclick="collectBidOffer()">
-                        Bid
-                    </button>
+                    <div id="@Html.Raw("bidButton"+@Model.Id)">
+                        @if(Model.state.Equals("Open") && Model.owner.Id != @ViewBag.userId){
+                            <button type="button" class="btn btn-md btn-outline-success" onclick="collectBidOffer()">&nbsp;Bid&nbsp;</button>
+                        }
+                        else{
+                            <button type="button" class="btn btn-md btn-outline-secondary" disabled>&nbsp;Bid&nbsp;</button>
+                        }
+                    </div>
                 </div>
             </div>  
         </div>
@@ -125,6 +136,19 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
+                    @foreach (var item in @ViewBag.bidList)
+                    {
+                        i = i + 1;
+                        <tr>
+                            <td>@i</td>
+                            <td>@item.user.UserName</td>
+                            <td>@item.price</td>
+                        </tr>
+                        
+                    }
+
+                  
                 
                 </tbody>
             </table>

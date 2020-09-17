@@ -273,7 +273,7 @@ function closeAuction(auctionId){
         },
         dataType: "json",
         success: function ( response ) {
-            alert("Success occured!\n" + response);
+            // alert("Success occured!\n" + response);
             $("#state"+auctionId).html("<div class='list-group-item' style='text-align: center;'>" + response.newState + "</div>");
             $("#bidButton"+auctionId).val("<button type='button' class='btn btn-md btn-outline-secondary disabled>&nbsp;Bid&nbsp;</button>");
 

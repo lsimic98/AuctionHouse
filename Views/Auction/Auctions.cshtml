@@ -69,8 +69,10 @@
                             <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
                         </button>
                     }
-                    
-                    <button style="width:89px;" class="btn btn-info"><i class="fa fa-info" aria-hidden="true"></i> Details</button>
+                    <a class="navbar-brand" asp-area="Auction detail" asp-controller="Auction" asp-action="AuctionDetail" asp-route-id="@item.Id">
+                        <button style="width:89px;" class="btn btn-info"><i class="fa fa-info" aria-hidden="true"></i> Details</button>
+                    </a>
+                        
                     
               
                 </td>

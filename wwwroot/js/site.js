@@ -3,6 +3,6 @@
 
 // Write your JavaScript code.
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/update").build();
+
 
 
